@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — cyob</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+<style>
+  .quality-bar { display: inline-flex; gap: 2px; }
+  .quality-bar span { width: 6px; height: 12px; background: rgba(255,255,255,0.1); border-radius: 1px; }
+  .quality-bar span.on { background: var(--green); }
+  .speed-bar span.on { background: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">cy</div>
+      <div class="logo-text">
+        <span class="name">cyob</span>
+        <span class="logo-sub">admin · control panel</span>
+      </div>
+    </a>
+    <nav class="topbar-nav">
+      <a href="#overview" class="active">Overview</a>
+      <a href="#stack">Stack control</a>
+      <a href="#users">Users</a>
+      <a href="#spending">Spending</a>
+    </nav>
+    <div class="topbar-meta">
+      <span class="tag tag-gold"><i class="ti ti-shield-lock" style="font-size: 11px;"></i> admin</span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<section style="padding: 40px 0 30px;">
+  <div class="wrap-lg">
+    <p class="eyebrow">Admin · private</p>
+    <h1 style="font-size: 32px; margin: 4px 0;">Control panel</h1>
+    <p class="muted">Everything that runs the platform. Every dollar. Every user. Every API.</p>
+  </div>
+</section>
+
+<!-- OVERVIEW STATS -->
+<section class="sm" id="overview">
+  <div class="wrap-lg">
+    <div class="grid grid-4">
+      <div class="stat">
+        <div class="stat-label">Active users</div>
+        <div class="stat-value">47</div>
+        <div class="stat-delta up">↑ 12 this week</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Paid conversions</div>
+        <div class="stat-value">8</div>
+        <div class="stat-delta up">↑ 17% conversion rate</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Runs this month</div>
+        <div class="stat-value">62</div>
+        <div class="stat-delta up">↑ vs 31 last month</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Revenue (MTD)</div>
+        <div class="stat-value">$1,247</div>
+        <div class="stat-delta up">↑ on track for $2.5k</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPENDING -->
+<section class="sm" id="spending">
+  <div class="wrap-lg">
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="eyebrow" style="margin: 0 0 2px;">Spending this month</p>
+          <h2>$84.20 of $200 cap</h2>
+        </div>
+        <button class="btn btn-gold"><i class="ti ti-arrow-up"></i> Raise cap to $500</button>
+      </div>
+      <div class="bar-meter" style="height: 10px; margin-bottom: 16px;">
+        <span style="width: 42%; background: var(--green);"></span>
+      </div>
+      <div class="grid grid-5" style="gap: 12px;">
+        <div>
+          <div class="muted-sm" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;">Claude</div>
+          <div style="font-size: 18px; font-weight: 500; margin-top: 4px;">$32.10</div>
+        </div>
+        <div>
+          <div class="muted-sm" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;">DALL-E</div>
+          <div style="font-size: 18px; font-weight: 500; margin-top: 4px;">$11.40</div>
+        </div>
+        <div>
+          <div class="muted-sm" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;">Seedance</div>
+          <div style="font-size: 18px; font-weight: 500; margin-top: 4px;">$28.50</div>
+        </div>
+        <div>
+          <div class="muted-sm" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;">Apify</div>
+          <div style="font-size: 18px; font-weight: 500; margin-top: 4px;">$11.20</div>
+        </div>
+        <div>
+          <div class="muted-sm" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;">Infra</div>
+          <div style="font-size: 18px; font-weight: 500; margin-top: 4px;">$1.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK CONTROL -->
+<section class="sm" id="stack">
+  <div class="wrap-lg">
+    <div class="flex items-baseline justify-between mb-3" style="padding-bottom: 14px; border-bottom: 0.5px solid var(--border); margin-bottom: 18px;">
+      <div>
+        <p class="eyebrow">Tech stack control</p>
+        <h2>Upgrade APIs with one click</h2>
+      </div>
+      <span class="muted-sm">Each upgrade changes the live stack instantly</span>
+    </div>
+
+    <!-- Header row -->
+    <div class="admin-row admin-row-head">
+      <div>Service</div>
+      <div>Current tier</div>
+      <div>Quality</div>
+      <div>Speed</div>
+      <div>Cost / month</div>
+      <div></div>
+    </div>
+
+    <!-- Claude -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">LLM · Claude</div>
+        <div class="muted-sm" style="font-size: 11px;">Deep strategy + agents</div>
+      </div>
+      <div><span class="tag">Sonnet 4.6</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div></div>
+      <div style="font-weight: 500;">~$50</div>
+      <div><button class="btn btn-sm btn-gold">Upgrade to Opus →</button></div>
+    </div>
+
+    <!-- GPT -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">LLM · GPT</div>
+        <div class="muted-sm" style="font-size: 11px;">Cheap utility tasks</div>
+      </div>
+      <div><span class="tag">GPT-4o-mini</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div></div>
+      <div style="font-weight: 500;">~$10</div>
+      <div><button class="btn btn-sm">Upgrade to GPT-5 →</button></div>
+    </div>
+
+    <!-- DALL-E -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">Images · DALL-E</div>
+        <div class="muted-sm" style="font-size: 11px;">Content library renders</div>
+      </div>
+      <div><span class="tag">DALL-E 3 Standard</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div style="font-weight: 500;">~$15</div>
+      <div><button class="btn btn-sm">Upgrade to HD →</button></div>
+    </div>
+
+    <!-- Seedance -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">Video · Seedance</div>
+        <div class="muted-sm" style="font-size: 11px;">AI video generation</div>
+      </div>
+      <div><span class="tag">Fast · 720p</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div></div>
+      <div style="font-weight: 500;">~$28</div>
+      <div><button class="btn btn-sm btn-gold">Upgrade to 1080p →</button></div>
+    </div>
+
+    <!-- Apify -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">Scraping · Apify</div>
+        <div class="muted-sm" style="font-size: 11px;">IG + TikTok competitor data</div>
+      </div>
+      <div><span class="tag">Personal $49/mo</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div></div>
+      <div style="font-weight: 500;">$49 fixed</div>
+      <div><button class="btn btn-sm">Upgrade to Team →</button></div>
+    </div>
+
+    <!-- Hosting -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">Hosting · Vercel</div>
+        <div class="muted-sm" style="font-size: 11px;">App + serverless</div>
+      </div>
+      <div><span class="tag tag-green">Hobby (free)</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div style="font-weight: 500;">$0</div>
+      <div><button class="btn btn-sm">Upgrade to Pro $20 →</button></div>
+    </div>
+
+    <!-- Database -->
+    <div class="admin-row">
+      <div>
+        <div style="font-weight: 500; font-size: 14px;">Database · Supabase</div>
+        <div class="muted-sm" style="font-size: 11px;">Postgres + auth + storage</div>
+      </div>
+      <div><span class="tag tag-green">Free tier</span></div>
+      <div><div class="quality-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div><div class="quality-bar speed-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+      <div style="font-weight: 500;">$0</div>
+      <div><button class="btn btn-sm">Upgrade to Pro $25 →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- USERS -->
+<section class="sm" id="users">
+  <div class="wrap-lg">
+    <div class="flex items-baseline justify-between mb-3" style="padding-bottom: 14px; border-bottom: 0.5px solid var(--border); margin-bottom: 18px;">
+      <div>
+        <p class="eyebrow">Users</p>
+        <h2>All registered accounts</h2>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-sm"><i class="ti ti-download"></i> Export CSV</button>
+        <button class="btn btn-sm"><i class="ti ti-mail"></i> Broadcast</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr; padding: 14px 18px; border-bottom: 0.5px solid var(--border); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-4); font-weight: 500;">
+        <div>User</div>
+        <div>Company</div>
+        <div>Industry</div>
+        <div>Tier</div>
+        <div>Last run</div>
+        <div>Revenue</div>
+      </div>
+      <div id="userRows"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>cyob.live · admin control panel · private</div>
+    <div>v1.0 · Tuesday 12 May 2026</div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+  // Mock user data
+  const users = [
+    { email: 'sarah.k@horizonretail.com', company: 'Horizon Retail', industry: 'Fashion', tier: 'Studio', last: '2 hours ago', revenue: '$199' },
+    { email: 'priya@malhotraco.in', company: 'Malhotra & Co', industry: 'Real estate', tier: 'Spark', last: '1 day ago', revenue: '$79' },
+    { email: 'james@aurorabrands.co.uk', company: 'Aurora Brands', industry: 'Perfume', tier: 'Studio', last: '3 days ago', revenue: '$199' },
+    { email: 'leila.h@cafetabula.com', company: 'Café Tabula', industry: 'Cafe', tier: 'Spark', last: '5 days ago', revenue: '$79' },
+    { email: 'wei.lin@nordicwellness.com', company: 'Nordic Wellness', industry: 'Fitness', tier: 'Free', last: '6 days ago', revenue: '—' },
+    { email: 'omar.r@dunesresidences.ae', company: 'Dunes Residences', industry: 'Real estate', tier: 'Studio', last: '1 week ago', revenue: '$199' },
+    { email: 'maya@ateliermaya.fr', company: 'Atelier Maya', industry: 'Jewelry', tier: 'Spark', last: '1 week ago', revenue: '$79' },
+    { email: 'rishi@indigospa.in', company: 'Indigo Spa', industry: 'Hospitality', tier: 'Free', last: '2 weeks ago', revenue: '—' },
+  ];
+
+  // Also add the actual logged-in user from this session if exists
+  const u = CYOB.user;
+  const intake = CYOB.intake;
+  if (u && intake) {
+    users.unshift({
+      email: u.email,
+      company: intake.company,
+      industry: intake.industry,
+      tier: CYOB.tier === 'free' ? 'Free' : CYOB.tier.charAt(0).toUpperCase() + CYOB.tier.slice(1),
+      last: 'Just now',
+      revenue: CYOB.tier === 'free' ? '—' : (CYOB.tier === 'spark' ? '$79' : '$199'),
+    });
+  }
+
+  const userRows = document.getElementById('userRows');
+  users.forEach(u => {
+    const tierTag = u.tier === 'Studio' ? 'tag-gold' : (u.tier === 'Spark' ? 'tag-blue' : '');
+    const row = document.createElement('div');
+    row.style.cssText = 'display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr; padding: 14px 18px; border-bottom: 0.5px solid var(--border); font-size: 13px; align-items: center;';
+    row.innerHTML = `
+      <div style="color: var(--text); font-weight: 450;">${u.email}</div>
+      <div class="muted">${u.company}</div>
+      <div class="muted">${u.industry}</div>
+      <div><span class="tag ${tierTag}">${u.tier}</span></div>
+      <div class="muted-sm">${u.last}</div>
+      <div style="font-weight: 500;">${u.revenue}</div>
+    `;
+    userRows.appendChild(row);
+  });
+
+  // Wire upgrade buttons (cosmetic)
+  document.querySelectorAll('.admin-row button').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const text = btn.textContent;
+      CYOB.toast('Demo · ' + text + ' would charge your card and switch the live API');
+    });
+  });
+</script>
+</body>
+</html>

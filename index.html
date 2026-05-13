@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cyob — strategic intelligence war room</title>
+<meta name="description" content="A private AI war room. Industry intelligence, company strategy, trend forecasting, growth planning. Built around your business.">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">cy</div>
+      <div class="logo-text">
+        <span class="name">cyob</span>
+        <span class="logo-sub">strategic intelligence</span>
+      </div>
+    </a>
+    <nav class="topbar-nav">
+      <a href="index.html" class="active">Start</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="plan.html">Plan</a>
+      <a href="library.html">Library</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="topbar-meta">
+      <a href="login.html" class="btn btn-sm">Login</a>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap-lg">
+    <p class="eyebrow">A private AI war room · for operators, founders, agencies</p>
+    <h1 class="display">
+      Industry intelligence. <br>
+      Company strategy. <br>
+      <span class="accent">Built around your business.</span>
+    </h1>
+    <p class="lead">Answer seven questions about your company. cyob runs ten specialist agent bots on it — industry history, live trend radar, gap analysis, six-month roadmap, content library, future predictions. Updated daily with Claude. Yours in minutes, not weeks.</p>
+    <div class="flex gap-3" style="flex-wrap: wrap;">
+      <button class="btn btn-primary btn-lg" onclick="openIntake()">
+        Start the intake
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <a href="dashboard.html" class="btn btn-lg">
+        See a sample dashboard
+      </a>
+    </div>
+    <div class="flex gap-4 mt-6" style="flex-wrap: wrap; color: var(--text-4); font-size: 12.5px; padding-top: 32px;">
+      <span><i class="ti ti-shield-check" style="vertical-align: -1px; color: var(--green);"></i> Verified email login</span>
+      <span><i class="ti ti-clock-bolt" style="vertical-align: -1px; color: var(--green);"></i> ~10 minute delivery</span>
+      <span><i class="ti ti-lock" style="vertical-align: -1px; color: var(--green);"></i> Your data, your dashboard</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- HOW IT WORKS -->
+<section class="sm">
+  <div class="wrap">
+    <p class="eyebrow text-center">How it works</p>
+    <h2 style="text-align: center; max-width: 640px; margin: 0 auto 50px;">A ten-agent intelligence engine — running on your business in three steps.</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <div style="font-size: 32px; font-weight: 500; color: var(--text-3); margin-bottom: 14px; letter-spacing: -0.02em;">01</div>
+        <h3>You answer seven questions</h3>
+        <p class="muted-sm">Industry, geography, size, brand vibe, audience, budget. Two minutes. Verified by email code.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 32px; font-weight: 500; color: var(--text-3); margin-bottom: 14px; letter-spacing: -0.02em;">02</div>
+        <h3>Ten agents run on your business</h3>
+        <p class="muted-sm">Historian, trend analyst, company research, competitor scout, gap detection, strategist, content creator, future engine, synthesis, document.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 32px; font-weight: 500; color: var(--text-3); margin-bottom: 14px; letter-spacing: -0.02em;">03</div>
+        <h3>A living six-month plan</h3>
+        <p class="muted-sm">Dashboard, content library with AI-generated visuals, week-by-week roadmap. Refresh daily for fresh trend signal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- AGENT PIPELINE PREVIEW -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The agents</p>
+    <h2 style="margin-bottom: 36px;">Ten specialists. One unified intelligence engine.</h2>
+    <div class="agent-grid">
+      <div class="agent"><div class="agent-num">01</div><div class="agent-name">Historian</div><div class="agent-status">Industry origins to present</div></div>
+      <div class="agent"><div class="agent-num">02</div><div class="agent-name">Trend Analyst</div><div class="agent-status">TikTok · Reels · Search · Ads</div></div>
+      <div class="agent"><div class="agent-num">03</div><div class="agent-name">Company Research</div><div class="agent-status">Forensic brand profile</div></div>
+      <div class="agent"><div class="agent-num">04</div><div class="agent-name">Competitor Scout</div><div class="agent-status">5 named competitors</div></div>
+      <div class="agent"><div class="agent-num">05</div><div class="agent-name">Gap Detection</div><div class="agent-status">Where you're exposed</div></div>
+      <div class="agent"><div class="agent-num">06</div><div class="agent-name">Strategist</div><div class="agent-status">90 / 180 / 365 day plan</div></div>
+      <div class="agent"><div class="agent-num">07</div><div class="agent-name">Content Creator</div><div class="agent-status">Campaigns + AI visuals</div></div>
+      <div class="agent"><div class="agent-num">08</div><div class="agent-name">Future Engine</div><div class="agent-status">1 / 3 / 5 year horizons</div></div>
+      <div class="agent"><div class="agent-num">09</div><div class="agent-name">Synthesis</div><div class="agent-status">Executive memo</div></div>
+      <div class="agent"><div class="agent-num">10</div><div class="agent-name">Document</div><div class="agent-status">Polished PDF report</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- WHAT YOU GET -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">What you get</p>
+    <h2 style="margin-bottom: 36px;">A consulting-grade intelligence package — delivered in minutes.</h2>
+    <div class="grid grid-2">
+      <div class="card card-hover" onclick="location.href='dashboard.html'">
+        <div class="flex justify-between items-center mb-3">
+          <span class="tag tag-blue"><i class="ti ti-layout-dashboard" style="font-size: 11px;"></i> Live</span>
+          <i class="ti ti-arrow-up-right" style="color: var(--text-3);"></i>
+        </div>
+        <h3 style="font-size: 19px; font-weight: 500;">Executive dashboard</h3>
+        <p class="muted-sm" style="margin-top: 6px;">Industry pulse, trend radar, gap board, strategic priorities, future horizons — one premium command center.</p>
+      </div>
+      <div class="card card-hover" onclick="location.href='plan.html'">
+        <div class="flex justify-between items-center mb-3">
+          <span class="tag tag-green"><i class="ti ti-route" style="font-size: 11px;"></i> 26 weeks</span>
+          <i class="ti ti-arrow-up-right" style="color: var(--text-3);"></i>
+        </div>
+        <h3 style="font-size: 19px; font-weight: 500;">Living six-month plan</h3>
+        <p class="muted-sm" style="margin-top: 6px;">Week-by-week execution roadmap with milestones. Refresh button updates trends on demand.</p>
+      </div>
+      <div class="card card-hover" onclick="location.href='library.html'">
+        <div class="flex justify-between items-center mb-3">
+          <span class="tag tag-purple"><i class="ti ti-palette" style="font-size: 11px;"></i> Visual</span>
+          <i class="ti ti-arrow-up-right" style="color: var(--text-3);"></i>
+        </div>
+        <h3 style="font-size: 19px; font-weight: 500;">Content library</h3>
+        <p class="muted-sm" style="margin-top: 6px;">4 hero campaigns. AI image renders. Ready-to-paste prompts for DALL-E, Seedance, Veo, Sora.</p>
+      </div>
+      <div class="card card-hover" onclick="openIntake()">
+        <div class="flex justify-between items-center mb-3">
+          <span class="tag tag-gold"><i class="ti ti-file-download" style="font-size: 11px;"></i> PDF</span>
+          <i class="ti ti-arrow-up-right" style="color: var(--text-3);"></i>
+        </div>
+        <h3 style="font-size: 19px; font-weight: 500;">Downloadable report</h3>
+        <p class="muted-sm" style="margin-top: 6px;">A consulting-grade PDF you can share, store, and send. Polished. Professional. Yours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="lg" style="text-align: center;">
+  <div class="wrap-md">
+    <p class="eyebrow">Ready?</p>
+    <h1 class="display" style="font-size: clamp(36px, 5vw, 56px);">Two minutes of input. <br><span class="accent">Ten agents of output.</span></h1>
+    <p class="lead" style="margin-left: auto; margin-right: auto;">Start the intake. Verify your email. Your strategic intelligence is ready in about ten minutes.</p>
+    <button class="btn btn-primary btn-lg" onclick="openIntake()">
+      Start the intake
+      <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>cyob.live · private strategic intelligence · internal use</div>
+    <div>v1.0 · Tuesday 12 May 2026</div>
+  </div>
+</footer>
+
+<!-- ============ INTAKE MODAL ============ -->
+<div class="modal-backdrop hidden" id="intakeModal" role="dialog" aria-modal="true">
+  <div class="modal" style="position: relative;">
+    <button class="modal-close" onclick="closeIntake()" aria-label="Close">×</button>
+
+    <p class="eyebrow" id="stepLabel">Step 1 of 9</p>
+    <div class="stepper" id="stepper"></div>
+
+    <!-- STEPS -->
+    <div class="step" data-step="1">
+      <h1>What's the company called?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">Your business, a client's, or a target you're researching. Stays private.</p>
+      <div class="field">
+        <input class="input input-lg" id="company" placeholder="e.g. Emaar Properties, or your own brand" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="2">
+      <h1>What industry?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">High level for now.</p>
+      <div class="chip-grid" id="industryChips">
+        <button class="chip" data-val="Real estate">Real estate</button>
+        <button class="chip" data-val="Perfume & fragrance">Perfume & fragrance</button>
+        <button class="chip" data-val="Skincare & beauty">Skincare & beauty</button>
+        <button class="chip" data-val="Restaurant & F&B">Restaurant & F&B</button>
+        <button class="chip" data-val="Cafe & specialty coffee">Cafe & coffee</button>
+        <button class="chip" data-val="Fashion & apparel">Fashion</button>
+        <button class="chip" data-val="Hospitality & hotels">Hospitality</button>
+        <button class="chip" data-val="Tech / SaaS">Tech / SaaS</button>
+        <button class="chip" data-val="Fitness & wellness">Fitness</button>
+        <button class="chip" data-val="Jewelry & watches">Jewelry</button>
+        <button class="chip" data-val="Education">Education</button>
+        <button class="chip" data-val="Other">Other</button>
+      </div>
+      <div class="field hidden mt-4" id="industryOtherWrap">
+        <input class="input" id="industryOther" placeholder="Type your industry">
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="3">
+      <h1>Where does the business operate?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">Primary geography for cultural and market context.</p>
+      <div class="chip-grid" id="geoChips">
+        <button class="chip" data-val="UAE / Dubai">UAE / Dubai</button>
+        <button class="chip" data-val="GCC / wider Gulf">GCC / Gulf</button>
+        <button class="chip" data-val="MENA">MENA</button>
+        <button class="chip" data-val="UK / Europe">UK / Europe</button>
+        <button class="chip" data-val="USA / Canada">USA / Canada</button>
+        <button class="chip" data-val="India / South Asia">India / South Asia</button>
+        <button class="chip" data-val="Southeast Asia">Southeast Asia</button>
+        <button class="chip" data-val="Global">Global</button>
+      </div>
+      <div class="field mt-4">
+        <label class="label">City (optional)</label>
+        <input class="input" id="city" placeholder="e.g. Dubai, Riyadh, London">
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="4">
+      <h1>How big is the operation?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">Affects the realism of recommendations.</p>
+      <div class="chip-grid" id="sizeChips">
+        <button class="chip" data-val="Solo / founder">Solo / founder</button>
+        <button class="chip" data-val="Small (2-20)">Small (2-20)</button>
+        <button class="chip" data-val="Mid-sized (21-200)">Mid-sized (21-200)</button>
+        <button class="chip" data-val="Large (201-2000)">Large (201-2000)</button>
+        <button class="chip" data-val="Enterprise (2000+)">Enterprise (2000+)</button>
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="5">
+      <h1>What's the brand vibe?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">Determines whether we recommend TikTok dance trends or restrained print.</p>
+      <div class="chip-grid" id="vibeChips">
+        <button class="chip" data-val="Luxury / ultra-premium">Luxury / ultra-premium</button>
+        <button class="chip" data-val="Premium / aspirational">Premium / aspirational</button>
+        <button class="chip" data-val="Modern / mainstream">Modern / mainstream</button>
+        <button class="chip" data-val="Bold / youth-led">Bold / youth-led</button>
+        <button class="chip" data-val="Craft / artisanal">Craft / artisanal</button>
+        <button class="chip" data-val="Enterprise / serious">Enterprise / serious</button>
+        <button class="chip" data-val="Friendly / approachable">Friendly / approachable</button>
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="6">
+      <h1>Who's the target audience?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">Describe in your own words — more specific = sharper plan.</p>
+      <div class="field">
+        <textarea class="textarea" id="audience" placeholder="e.g. HNW Indian investors aged 35-55 looking for second homes in Dubai, primarily discovering via TikTok and family referrals."></textarea>
+      </div>
+      <label class="label">Audience type</label>
+      <div class="chip-grid" id="audienceTypeChips">
+        <button class="chip" data-val="B2C consumer">B2C</button>
+        <button class="chip" data-val="B2B / enterprise">B2B</button>
+        <button class="chip" data-val="HNW / investor">HNW</button>
+        <button class="chip" data-val="Mass market">Mass</button>
+        <button class="chip" data-val="Niche / specialist">Niche</button>
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="7">
+      <h1>Marketing budget tier?</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">Rough monthly. Lets us recommend moves you can afford.</p>
+      <div class="chip-grid" id="budgetChips">
+        <button class="chip" data-val="< $5k / month">Under $5k</button>
+        <button class="chip" data-val="$5-25k / month">$5-25k</button>
+        <button class="chip" data-val="$25-100k / month">$25-100k</button>
+        <button class="chip" data-val="$100-500k / month">$100-500k</button>
+        <button class="chip" data-val="$500k+ / month">$500k+</button>
+      </div>
+      <div class="field mt-4">
+        <label class="label">Anything else? (optional)</label>
+        <textarea class="textarea" id="notes" placeholder="Specific competitors, recent launches, current pain points..."></textarea>
+      </div>
+    </div>
+
+    <div class="step hidden" data-step="8">
+      <h1>Your email</h1>
+      <p class="muted-sm" style="margin-bottom: 20px;">We send a 6-digit verification code. No spam. No password yet — we'll set one in a moment.</p>
+      <div class="field">
+        <input class="input input-lg" id="email" type="email" placeholder="you@company.com" autocomplete="email">
+      </div>
+      <p class="muted-sm" style="font-size: 11.5px; color: var(--text-4); padding-top: 8px;">
+        <i class="ti ti-shield-lock" style="vertical-align: -1px;"></i> Encrypted at rest. Used for delivery and login only.
+      </p>
+    </div>
+
+    <div class="step hidden" data-step="9">
+      <h1>Enter your code</h1>
+      <p class="muted-sm" style="margin-bottom: 8px;">Six digits sent to <span id="emailEcho" style="color: var(--text-2);"></span></p>
+      <p class="muted-sm" style="margin-bottom: 8px; font-size: 11px; color: var(--green);">
+        <i class="ti ti-info-circle" style="vertical-align: -1px;"></i> Demo mode — use any 6 digits (try <strong>123456</strong>)
+      </p>
+      <div class="otp-row" id="otpRow">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+      </div>
+      <div class="text-center">
+        <button class="btn btn-ghost btn-sm" onclick="CYOB.toast('Code re-sent — check inbox');">Resend code</button>
+      </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="flex justify-between items-center mt-6" style="padding-top: 20px;">
+      <button class="btn btn-ghost" id="backBtn" style="visibility: hidden;">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+      <button class="btn btn-primary" id="nextBtn">
+        Next <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const TOTAL_STEPS = 9;
+  let currentStep = 1;
+  let intake = CYOB.intake || {};
+
+  // ----------- modal open/close -----------
+  function openIntake() {
+    document.getElementById('intakeModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    // Prefill if returning
+    if (intake.company) document.getElementById('company').value = intake.company;
+  }
+  function closeIntake() {
+    document.getElementById('intakeModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  // ----------- stepper render -----------
+  const stepper = document.getElementById('stepper');
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const p = document.createElement('div');
+    p.className = 'stepper-pill';
+    stepper.appendChild(p);
+  }
+
+  // ----------- chip binding -----------
+  function bindChips(id, key, onChange) {
+    const c = document.getElementById(id);
+    if (!c) return;
+    c.addEventListener('click', e => {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      c.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      intake[key] = btn.dataset.val;
+      if (onChange) onChange(btn.dataset.val);
+    });
+  }
+  bindChips('industryChips', 'industry', val => {
+    const wrap = document.getElementById('industryOtherWrap');
+    wrap.classList.toggle('hidden', val !== 'Other');
+    if (val !== 'Other') intake.industry = val;
+  });
+  bindChips('geoChips', 'geography');
+  bindChips('sizeChips', 'size');
+  bindChips('vibeChips', 'vibe');
+  bindChips('audienceTypeChips', 'audienceType');
+  bindChips('budgetChips', 'budget');
+
+  // ----------- text inputs -----------
+  document.getElementById('company').addEventListener('input', e => intake.company = e.target.value);
+  document.getElementById('industryOther').addEventListener('input', e => intake.industry = e.target.value);
+  document.getElementById('city').addEventListener('input', e => intake.city = e.target.value);
+  document.getElementById('audience').addEventListener('input', e => intake.audience = e.target.value);
+  document.getElementById('notes').addEventListener('input', e => intake.notes = e.target.value);
+  document.getElementById('email').addEventListener('input', e => intake.email = e.target.value);
+
+  // ----------- OTP inputs -----------
+  const otpInputs = document.querySelectorAll('#otpRow input');
+  otpInputs.forEach((inp, idx) => {
+    inp.addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g, '');
+      e.target.value = v;
+      if (v && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+      if (v) inp.classList.add('filled');
+      else inp.classList.remove('filled');
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && idx > 0) otpInputs[idx - 1].focus();
+    });
+  });
+
+  // ----------- step renderer -----------
+  function renderStep() {
+    document.querySelectorAll('.step').forEach(el => el.classList.toggle('hidden', parseInt(el.dataset.step) !== currentStep));
+    document.getElementById('stepLabel').textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
+    document.querySelectorAll('.stepper-pill').forEach((p, i) => {
+      p.classList.remove('done', 'current');
+      if (i + 1 < currentStep) p.classList.add('done');
+      if (i + 1 === currentStep) p.classList.add('current');
+    });
+    document.getElementById('backBtn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+    const nb = document.getElementById('nextBtn');
+    if (currentStep === TOTAL_STEPS) {
+      nb.innerHTML = 'Verify & build my dashboard <i class="ti ti-sparkles"></i>';
+    } else if (currentStep === 8) {
+      nb.innerHTML = 'Send code <i class="ti ti-mail"></i>';
+    } else if (currentStep === 7) {
+      nb.innerHTML = 'Continue <i class="ti ti-arrow-right"></i>';
+    } else {
+      nb.innerHTML = 'Next <i class="ti ti-arrow-right"></i>';
+    }
+  }
+  renderStep();
+
+  // ----------- validation -----------
+  function validate(step) {
+    switch (step) {
+      case 1: if (!intake.company || intake.company.length < 2) return 'Add a company name.';
+        break;
+      case 2: if (!intake.industry) return 'Pick an industry.'; break;
+      case 3: if (!intake.geography) return 'Pick a region.'; break;
+      case 4: if (!intake.size) return 'Pick a size.'; break;
+      case 5: if (!intake.vibe) return 'Pick a brand vibe.'; break;
+      case 6: if (!intake.audience || intake.audience.length < 10) return 'Describe the audience in a sentence or two.'; break;
+      case 7: if (!intake.budget) return 'Pick a budget tier.'; break;
+      case 8: if (!intake.email || !/^.+@.+\..+$/.test(intake.email)) return 'Enter a valid email.'; break;
+      case 9: {
+        const code = Array.from(otpInputs).map(i => i.value).join('');
+        if (code.length !== 6) return 'Enter all 6 digits.';
+        intake.otpCode = code;
+        break;
+      }
+    }
+    return null;
+  }
+
+  // ----------- next button -----------
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    const err = validate(currentStep);
+    if (err) { CYOB.toast(err); return; }
+
+    if (currentStep === 8) {
+      // simulate code send
+      document.getElementById('emailEcho').textContent = intake.email;
+      CYOB.toast('Code sent to ' + intake.email);
+      currentStep++;
+      renderStep();
+      setTimeout(() => otpInputs[0].focus(), 200);
+      return;
+    }
+
+    if (currentStep === TOTAL_STEPS) {
+      // Save intake, create user, generate plan, redirect to "preparing" screen
+      CYOB.saveIntake(intake);
+      CYOB.setUser(intake.email);
+      CYOB.setTier('free');
+      CYOB.generatePlan(intake);
+      CYOB.go('preparing.html');
+      return;
+    }
+    currentStep++;
+    renderStep();
+  });
+
+  document.getElementById('backBtn').addEventListener('click', () => {
+    if (currentStep > 1) { currentStep--; renderStep(); }
+  });
+
+  // close on backdrop click
+  document.getElementById('intakeModal').addEventListener('click', e => {
+    if (e.target.id === 'intakeModal') closeIntake();
+  });
+
+  // escape to close
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeIntake();
+  });
+
+  // expose for hero buttons
+  window.openIntake = openIntake;
+  window.closeIntake = closeIntake;
+</script>
+</body>
+</html>

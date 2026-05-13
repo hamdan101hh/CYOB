@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — cyob</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">cy</div>
+      <div class="logo-text">
+        <span class="name">cyob</span>
+        <span class="logo-sub">strategic intelligence</span>
+      </div>
+    </a>
+    <nav class="topbar-nav">
+      <a href="index.html">Start</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="plan.html">Plan</a>
+      <a href="library.html">Library</a>
+      <a href="pricing.html" class="active">Pricing</a>
+    </nav>
+    <div class="topbar-meta">
+      <a href="login.html" class="btn btn-sm">Login</a>
+    </div>
+  </div>
+</div>
+
+<section class="hero" style="padding-top: 100px;">
+  <div class="wrap-md text-center">
+    <p class="eyebrow">Pricing</p>
+    <h1 class="display" style="font-size: clamp(36px, 5vw, 56px);">Strategy that pays<br><span class="accent">for itself.</span></h1>
+    <p class="lead" style="margin: 0 auto 32px;">Free preview to taste. Pro plans to run on serious businesses. Enterprise when you need white-label and team access.</p>
+    <div class="price-toggle" style="display: inline-flex;">
+      <button id="monthlyBtn">Monthly</button>
+      <button id="annualBtn" class="active">Annual <span style="font-size: 10px; opacity: 0.6;">−17%</span></button>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 20px 0 80px;">
+  <div class="wrap-lg">
+    <div class="grid grid-3" style="gap: 18px; align-items: stretch;">
+
+      <!-- FREE -->
+      <div class="price-card">
+        <div class="price-tier">Free preview</div>
+        <div class="price-amount">$0<small> · forever</small></div>
+        <p class="price-desc">Taste the full system on one business. Limited to 50 free runs per month globally.</p>
+        <ul class="price-features">
+          <li>Full intake + dashboard</li>
+          <li>Industry pulse + trend radar (top-line)</li>
+          <li>Strategic priorities (titles only)</li>
+          <li>1 preview video generated</li>
+          <li>Manual refresh (1× per month)</li>
+          <li class="dim">Full content library locked</li>
+          <li class="dim">6 hero AI videos locked</li>
+          <li class="dim">Weekly auto-refresh locked</li>
+          <li class="dim">PDF download locked</li>
+        </ul>
+        <a href="index.html#" onclick="event.preventDefault(); location.href='index.html'; setTimeout(()=>document.querySelector('button.btn-primary').click(), 200);" class="btn btn-block">Start free</a>
+      </div>
+
+      <!-- SPARK -->
+      <div class="price-card featured">
+        <div class="price-tier">Spark</div>
+        <div class="price-amount" data-monthly="$79/mo" data-annual="$66/mo · billed $790/yr">$66<small>/mo</small></div>
+        <p class="price-desc">For solo founders, marketers, and small teams running on one business.</p>
+        <ul class="price-features">
+          <li>Full intake, dashboard, plan</li>
+          <li>Full trend radar with evidence links</li>
+          <li>Full gap analysis + remediation</li>
+          <li>5 strategic priorities with budgets</li>
+          <li>26-week roadmap</li>
+          <li>6 AI-generated images per campaign</li>
+          <li>2 AI hero videos</li>
+          <li>Weekly manual refresh</li>
+          <li>Downloadable PDF report</li>
+          <li class="dim">Competitor IG/TikTok scrape</li>
+          <li class="dim">Daily auto-refresh</li>
+        </ul>
+        <button class="btn btn-gold btn-block" onclick="upgrade('spark')">Upgrade to Spark</button>
+      </div>
+
+      <!-- STUDIO -->
+      <div class="price-card">
+        <div class="price-tier">Studio</div>
+        <div class="price-amount" data-monthly="$199/mo" data-annual="$166/mo · billed $1,990/yr">$166<small>/mo</small></div>
+        <p class="price-desc">For small agencies serving clients, and multi-brand operators.</p>
+        <ul class="price-features">
+          <li>Everything in Spark</li>
+          <li>20 AI-generated images per campaign</li>
+          <li>6 AI hero videos</li>
+          <li>Competitor Instagram + TikTok scrape</li>
+          <li>Weekly auto-refresh (every Monday)</li>
+          <li>3 active business runs at a time</li>
+          <li>Priority bot processing</li>
+          <li>Custom moodboard direction</li>
+        </ul>
+        <button class="btn btn-primary btn-block" onclick="upgrade('studio')">Upgrade to Studio</button>
+      </div>
+
+    </div>
+
+    <!-- ENTERPRISE -->
+    <div class="card card-elevated mt-6" style="margin-top: 40px; padding: 36px; background: linear-gradient(135deg, rgba(212,184,150,0.04), transparent 70%); border-color: rgba(212,184,150,0.2);">
+      <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 20px;">
+        <div style="flex: 1; min-width: 280px;">
+          <p class="eyebrow" style="color: var(--gold); margin-bottom: 8px;">For companies & agencies</p>
+          <h2 style="font-size: 28px;">Enterprise · cyob for your brand</h2>
+          <p class="muted" style="margin-top: 10px; max-width: 540px;">White-label dashboards on your domain. Team access. Custom AI agents. Dedicated account. Multi-brand portfolios. Annual contract.</p>
+          <ul style="list-style: none; padding: 0; margin: 20px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; max-width: 540px;">
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> White-label branding</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Custom subdomain</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Team / multi-seat</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Daily auto-refresh + alerts</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Unlimited business runs</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Custom AI agent additions</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Dedicated account manager</li>
+            <li class="muted-sm" style="font-size: 13px;"><i class="ti ti-check" style="color: var(--gold); vertical-align: -2px; margin-right: 6px;"></i> Invoice / ACH billing</li>
+          </ul>
+        </div>
+        <button class="btn btn-gold btn-lg" onclick="contactSales()">
+          Contact sales <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="mt-6" style="margin-top: 80px;">
+      <p class="eyebrow text-center">Common questions</p>
+      <h2 class="text-center" style="margin-bottom: 36px;">Honest answers.</h2>
+      <div class="grid grid-2" style="gap: 14px;">
+        <div class="card">
+          <h3>Can I cancel anytime?</h3>
+          <p class="muted-sm" style="margin-top: 8px;">Yes. No contract on monthly. Annual plans get 17% off but commit for 12 months. Enterprise is custom-term.</p>
+        </div>
+        <div class="card">
+          <h3>How accurate is the AI strategy?</h3>
+          <p class="muted-sm" style="margin-top: 8px;">The framework is real. The AI generation matches industry best practice. The refresh button keeps it live. You still own the final judgment.</p>
+        </div>
+        <div class="card">
+          <h3>Do I own what cyob produces?</h3>
+          <p class="muted-sm" style="margin-top: 8px;">Yes. Every strategy, image prompt, video prompt, and PDF is yours. Use them anywhere. Show them to clients. License-free.</p>
+        </div>
+        <div class="card">
+          <h3>What if my industry isn't listed?</h3>
+          <p class="muted-sm" style="margin-top: 8px;">Pick "Other" in intake. The system adapts. We've tested across 80+ industry verticals globally.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Contact modal -->
+<div class="modal-backdrop hidden" id="contactModal">
+  <div class="modal" style="position: relative;">
+    <button class="modal-close" onclick="closeContact()">×</button>
+    <p class="eyebrow">Enterprise inquiry</p>
+    <h2 style="font-size: 24px; margin-bottom: 16px;">Tell us about your team</h2>
+    <div class="field">
+      <label class="label">Company</label>
+      <input class="input" id="ctCompany" placeholder="Your company name">
+    </div>
+    <div class="field">
+      <label class="label">Your name</label>
+      <input class="input" id="ctName" placeholder="Full name">
+    </div>
+    <div class="field">
+      <label class="label">Work email</label>
+      <input class="input" id="ctEmail" placeholder="you@company.com">
+    </div>
+    <div class="field">
+      <label class="label">Team size</label>
+      <div class="chip-grid" id="ctSizeChips">
+        <button class="chip" data-val="1-10">1-10</button>
+        <button class="chip" data-val="11-50">11-50</button>
+        <button class="chip" data-val="51-200">51-200</button>
+        <button class="chip" data-val="200+">200+</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">What's the use case?</label>
+      <textarea class="textarea" id="ctUseCase" placeholder="How would your team use cyob?"></textarea>
+    </div>
+    <button class="btn btn-gold btn-block btn-lg" onclick="submitContact()">Submit inquiry</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>cyob.live · strategic intelligence</div>
+    <div>v1.0 · Tuesday 12 May 2026</div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+  let billingMode = 'annual';
+
+  function setMode(mode) {
+    billingMode = mode;
+    document.getElementById('monthlyBtn').classList.toggle('active', mode === 'monthly');
+    document.getElementById('annualBtn').classList.toggle('active', mode === 'annual');
+    document.querySelectorAll('.price-amount[data-monthly]').forEach(el => {
+      const small = el.querySelector('small');
+      const val = mode === 'monthly' ? el.dataset.monthly : el.dataset.annual;
+      const parts = val.split('/');
+      el.innerHTML = parts[0] + (parts[1] ? '<small>/' + parts.slice(1).join('/') + '</small>' : '');
+    });
+  }
+  document.getElementById('monthlyBtn').onclick = () => setMode('monthly');
+  document.getElementById('annualBtn').onclick = () => setMode('annual');
+  setMode('annual');
+
+  function upgrade(tier) {
+    CYOB.setTier(tier);
+    CYOB.toast(`Upgraded to ${tier.charAt(0).toUpperCase() + tier.slice(1)} · demo mode`);
+    setTimeout(() => location.href = 'dashboard.html', 1200);
+  }
+  window.upgrade = upgrade;
+
+  // Enterprise contact
+  function contactSales() {
+    document.getElementById('contactModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeContact() {
+    document.getElementById('contactModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  window.contactSales = contactSales; window.closeContact = closeContact;
+
+  document.getElementById('ctSizeChips').addEventListener('click', e => {
+    const b = e.target.closest('.chip');
+    if (!b) return;
+    document.querySelectorAll('#ctSizeChips .chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+  });
+
+  function submitContact() {
+    const co = document.getElementById('ctCompany').value;
+    const name = document.getElementById('ctName').value;
+    const email = document.getElementById('ctEmail').value;
+    if (!co || !name || !email) { CYOB.toast('Please fill all required fields'); return; }
+    CYOB.toast('Inquiry sent — you\'ll hear from us within 1 business day');
+    setTimeout(closeContact, 1400);
+  }
+  window.submitContact = submitContact;
+</script>
+</body>
+</html>

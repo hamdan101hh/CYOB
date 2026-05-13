@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preparing your dashboard — cyob</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">cy</div>
+      <div class="logo-text">
+        <span class="name">cyob</span>
+        <span class="logo-sub">strategic intelligence</span>
+      </div>
+    </a>
+    <div class="topbar-meta">
+      <span class="dot dot-live"></span> Running
+    </div>
+  </div>
+</div>
+
+<section style="padding: 80px 0 40px;">
+  <div class="wrap-md">
+    <div class="text-center" style="margin-bottom: 48px;">
+      <p class="eyebrow">Step 10 · final phase</p>
+      <h1 class="display" style="font-size: clamp(32px, 4.5vw, 48px);">Your strategic intelligence <br><span class="accent">is being prepared.</span></h1>
+      <p class="lead" style="margin: 0 auto;">Ten agent bots are running on <strong id="companyName" style="color: var(--text);">your business</strong>. This takes about ten minutes. We'll email you the moment your dashboard is ready.</p>
+    </div>
+
+    <div class="card card-elevated" style="padding: 28px;">
+      <div class="flex justify-between items-center mb-4">
+        <h3 style="font-size: 14px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;">Agent pipeline</h3>
+        <span class="muted-sm" id="progressText">0 of 10 complete</span>
+      </div>
+
+      <div class="bar" style="margin-bottom: 24px;">
+        <span id="progressBar" style="width: 0%;"></span>
+      </div>
+
+      <div id="botList">
+        <div class="bot-line" data-bot="1"><div class="bot-icon">1</div><div class="bot-name">Industry Historian</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="2"><div class="bot-icon">2</div><div class="bot-name">Trend Analyst</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="3"><div class="bot-icon">3</div><div class="bot-name">Company Research</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="4"><div class="bot-icon">4</div><div class="bot-name">Competitor Scout</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="5"><div class="bot-icon">5</div><div class="bot-name">Gap Detection</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="6"><div class="bot-icon">6</div><div class="bot-name">Strategic Planner</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="7"><div class="bot-icon">7</div><div class="bot-name">Content Creator</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="8"><div class="bot-icon">8</div><div class="bot-name">Future Prediction Engine</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="9"><div class="bot-icon">9</div><div class="bot-name">Master Synthesis</div><div class="bot-status">queued</div></div>
+        <div class="bot-line mt-2" data-bot="10"><div class="bot-icon">10</div><div class="bot-name">Document Generator</div><div class="bot-status">queued</div></div>
+      </div>
+    </div>
+
+    <div class="text-center mt-6" style="padding: 32px 0;">
+      <p class="muted-sm">Sit back. Your dashboard will open automatically when ready.</p>
+      <p class="muted-sm" style="font-size: 11px; color: var(--text-4); margin-top: 8px;">
+        <i class="ti ti-info-circle" style="vertical-align: -1px;"></i>
+        Demo build — runs in ~30 seconds rather than the production 10 minutes.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+  // Set company name
+  const intake = CYOB.intake;
+  if (intake && intake.company) {
+    document.getElementById('companyName').textContent = intake.company;
+  } else {
+    // No intake — redirect home
+    CYOB.go('index.html');
+  }
+
+  // ----------- simulate bot pipeline -----------
+  const botStatuses = [
+    ['Researching industry origins', 'Mapping eras and inflection points', 'Synthesizing patterns', 'Done'],
+    ['Scanning TikTok signals', 'Reading Reels engagement', 'Checking Google Trends', 'Done'],
+    ['Auditing brand assets', 'Reviewing channel posture', 'Analyzing tone', 'Done'],
+    ['Identifying competitors', 'Scraping public content', 'Ranking threats', 'Done'],
+    ['Comparing brand vs market', 'Detecting positioning gaps', 'Ranking severity', 'Done'],
+    ['Drafting north star', 'Generating priority moves', 'Building 26-week roadmap', 'Done'],
+    ['Generating campaigns', 'Writing scripts', 'Composing AI prompts', 'Done'],
+    ['Modeling 1-year horizon', 'Modeling 3-year horizon', 'Modeling 5-year horizon', 'Done'],
+    ['Distilling top insights', 'Drafting executive memo', 'Finalizing decisions', 'Done'],
+    ['Compiling sections', 'Formatting document', 'Generating PDF', 'Done'],
+  ];
+
+  const bots = document.querySelectorAll('.bot-line');
+  let current = 0;
+
+  function runBot(idx) {
+    if (idx >= bots.length) return finish();
+    const bot = bots[idx];
+    bot.classList.add('active');
+    const statusEl = bot.querySelector('.bot-status');
+    const statuses = botStatuses[idx];
+    let s = 0;
+    statusEl.textContent = statuses[0];
+    const interval = setInterval(() => {
+      s++;
+      if (s < statuses.length - 1) {
+        statusEl.textContent = statuses[s];
+      } else {
+        clearInterval(interval);
+        bot.classList.remove('active');
+        bot.classList.add('done');
+        bot.querySelector('.bot-icon').innerHTML = '<i class="ti ti-check"></i>';
+        statusEl.textContent = 'Complete';
+        statusEl.style.color = 'var(--green)';
+        current++;
+        updateProgress();
+        setTimeout(() => runBot(idx + 1), 250);
+      }
+    }, 700);
+  }
+
+  function updateProgress() {
+    const pct = (current / bots.length) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${current} of ${bots.length} complete`;
+  }
+
+  function finish() {
+    document.getElementById('progressText').innerHTML = '<span style="color: var(--green);"><i class="ti ti-check" style="vertical-align: -1px;"></i> All agents complete — opening your dashboard</span>';
+    setTimeout(() => CYOB.go('dashboard.html'), 1200);
+  }
+
+  // start
+  setTimeout(() => runBot(0), 800);
+</script>
+</body>
+</html>

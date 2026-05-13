@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — cyob</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">cy</div>
+      <div class="logo-text">
+        <span class="name">cyob</span>
+        <span class="logo-sub">strategic intelligence</span>
+      </div>
+    </a>
+    <nav class="topbar-nav">
+      <a href="index.html">Start</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="plan.html">Plan</a>
+      <a href="library.html">Library</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="topbar-meta">
+      <span class="dot dot-live"></span> 10 agents online
+      <span id="userBadge" style="margin-left: 8px; padding: 4px 10px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 999px; font-size: 11px;"></span>
+    </div>
+  </div>
+</div>
+
+<!-- TARGET BAR -->
+<section class="sm" style="padding-top: 40px;">
+  <div class="wrap-lg">
+    <div class="flex items-center justify-between" style="gap: 20px; flex-wrap: wrap;">
+      <div class="flex items-center gap-4">
+        <div style="width: 56px; height: 56px; border-radius: 12px; background: linear-gradient(135deg, #1a1a26, #2a2a3a); display: flex; align-items: center; justify-content: center; border: 0.5px solid var(--border-2); font-weight: 500; font-size: 18px; letter-spacing: 0.02em;" id="companyAvatar">—</div>
+        <div>
+          <p class="eyebrow" style="margin: 0 0 4px;">Active target</p>
+          <h1 style="font-size: 26px; margin: 0;" id="companyTitle">No active run</h1>
+          <p class="muted-sm" style="margin: 4px 0 0;" id="targetMeta">—</p>
+        </div>
+      </div>
+      <div class="flex gap-2" style="flex-wrap: wrap;">
+        <button class="btn" id="refreshBtn"><i class="ti ti-refresh"></i> Refresh trends</button>
+        <a href="plan.html" class="btn"><i class="ti ti-route"></i> Open plan</a>
+        <a href="library.html" class="btn"><i class="ti ti-palette"></i> Library</a>
+        <button class="btn btn-gold" id="upgradeBtn"><i class="ti ti-crown"></i> Upgrade</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT PIPELINE -->
+<section class="sm">
+  <div class="wrap-lg">
+    <div class="flex items-center justify-between mb-3">
+      <p class="eyebrow" style="margin: 0;">Agent pipeline · run complete</p>
+      <span class="muted-sm">~30 seconds · all 10 agents finished</span>
+    </div>
+    <div class="agent-grid">
+      <div class="agent" onclick="CYOB.toast('Industry Historian report — full content in PDF and plan page')"><div class="agent-num">01 · HISTORIAN</div><div class="agent-name" style="margin-top: 6px;">Industry origins mapped</div><div class="agent-status"><span style="color: var(--green);">●</span> 5 inflection points</div></div>
+      <div class="agent" onclick="CYOB.toast('Trend Analyst — see full radar below')"><div class="agent-num">02 · TRENDS</div><div class="agent-name" style="margin-top: 6px;">Live radar live</div><div class="agent-status"><span style="color: var(--green);">●</span> 8 signals tracked</div></div>
+      <div class="agent" onclick="CYOB.toast('Company Research — see brand profile section')"><div class="agent-num">03 · COMPANY</div><div class="agent-name" style="margin-top: 6px;">Forensic profile</div><div class="agent-status"><span style="color: var(--green);">●</span> 6 tensions surfaced</div></div>
+      <div class="agent" onclick="CYOB.toast('Competitor Scout — see competitor section')"><div class="agent-num">04 · COMPETITORS</div><div class="agent-name" style="margin-top: 6px;">5 named threats</div><div class="agent-status"><span style="color: var(--green);">●</span> Public data only</div></div>
+      <div class="agent" onclick="document.getElementById('gapsSection').scrollIntoView({behavior:'smooth'})"><div class="agent-num">05 · GAPS</div><div class="agent-name" style="margin-top: 6px;">7 ranked gaps</div><div class="agent-status"><span style="color: var(--amber);">●</span> 3 critical</div></div>
+      <div class="agent" onclick="CYOB.go('plan.html')"><div class="agent-num">06 · STRATEGY</div><div class="agent-name" style="margin-top: 6px;">26-week roadmap</div><div class="agent-status"><span style="color: var(--green);">●</span> Open plan →</div></div>
+      <div class="agent" onclick="CYOB.go('library.html')"><div class="agent-num">07 · CONTENT</div><div class="agent-name" style="margin-top: 6px;">4 campaigns</div><div class="agent-status"><span style="color: var(--green);">●</span> Open library →</div></div>
+      <div class="agent" onclick="document.getElementById('futureSection').scrollIntoView({behavior:'smooth'})"><div class="agent-num">08 · FUTURE</div><div class="agent-name" style="margin-top: 6px;">1 / 3 / 5 year</div><div class="agent-status"><span style="color: var(--green);">●</span> 3 horizons</div></div>
+      <div class="agent current"><div class="agent-num">09 · DASHBOARD</div><div class="agent-name" style="margin-top: 6px;">You are here</div><div class="agent-status"><span style="color: var(--text);">●</span> Live</div></div>
+      <div class="agent" onclick="downloadPDF()"><div class="agent-num">10 · DOCUMENT</div><div class="agent-name" style="margin-top: 6px;">PDF report</div><div class="agent-status"><span style="color: var(--green);">●</span> Download →</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- KPI PULSE -->
+<section class="sm">
+  <div class="wrap-lg">
+    <div class="flex items-center justify-between mb-3">
+      <p class="eyebrow" style="margin: 0;">Industry pulse</p>
+      <span class="muted-sm" id="industryName">—</span>
+    </div>
+    <div class="grid grid-4" id="kpiGrid"></div>
+  </div>
+</section>
+
+<!-- TRENDS + GAPS TWO COL -->
+<section class="sm">
+  <div class="wrap-lg">
+    <div class="grid grid-2">
+
+      <!-- TRENDS -->
+      <div class="card">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 2px;">Trend radar</p>
+            <h3>What's moving right now</h3>
+          </div>
+          <span class="tag tag-green"><span class="dot dot-live" style="background: var(--green);"></span> Live</span>
+        </div>
+        <div id="trendList"></div>
+        <button class="btn btn-block mt-4" onclick="CYOB.go('plan.html#trends')">
+          Open full trend report <i class="ti ti-arrow-up-right"></i>
+        </button>
+      </div>
+
+      <!-- GAPS -->
+      <div class="card" id="gapsSection">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 2px;">Gap detection</p>
+            <h3>Where you're exposed</h3>
+          </div>
+          <span class="tag tag-amber"><i class="ti ti-alert-triangle" style="font-size: 11px;"></i> 3 critical</span>
+        </div>
+        <div id="gapList"></div>
+        <button class="btn btn-block mt-4" onclick="CYOB.go('plan.html#gaps')">
+          Open full gap analysis <i class="ti ti-arrow-up-right"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGIC PRIORITIES -->
+<section class="sm">
+  <div class="wrap-lg">
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="eyebrow" style="margin: 0 0 2px;">Strategic priorities</p>
+          <h3>The five moves to make</h3>
+        </div>
+        <span class="muted-sm">Ranked by ROI × feasibility</span>
+      </div>
+      <div class="grid grid-5" id="priorityGrid"></div>
+      <button class="btn btn-primary btn-block mt-4" onclick="CYOB.go('plan.html#strategy')">
+        Open full strategic roadmap <i class="ti ti-arrow-up-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- COMPETITORS + FUTURE -->
+<section class="sm">
+  <div class="wrap-lg">
+    <div class="grid grid-2">
+
+      <!-- COMPETITORS -->
+      <div class="card" id="competitorSection">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 2px;">Competitor scout</p>
+            <h3>Named threats</h3>
+          </div>
+          <span class="tag" id="competitorTag">—</span>
+        </div>
+        <div id="competitorList"></div>
+      </div>
+
+      <!-- FUTURE -->
+      <div class="card" id="futureSection">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="eyebrow" style="margin: 0 0 2px;">Future engine</p>
+            <h3>1 / 3 / 5 year horizons</h3>
+          </div>
+        </div>
+        <div id="futureList"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA FOOTER -->
+<section class="sm">
+  <div class="wrap-lg">
+    <div class="card card-elevated text-center" style="padding: 40px 32px;">
+      <p class="eyebrow">Final step</p>
+      <h2 style="font-size: 26px; margin-bottom: 8px;">Open your full six-month plan.</h2>
+      <p class="muted" style="max-width: 520px; margin: 0 auto 24px;">Week-by-week roadmap, hero campaigns, AI image renders, refresh button — everything the agents produced.</p>
+      <div class="flex gap-2 justify-between" style="justify-content: center; flex-wrap: wrap;">
+        <a href="plan.html" class="btn btn-primary"><i class="ti ti-route"></i> Open plan</a>
+        <a href="library.html" class="btn"><i class="ti ti-palette"></i> Open library</a>
+        <button class="btn" onclick="downloadPDF()"><i class="ti ti-file-download"></i> Download PDF</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>cyob.live · private strategic intelligence</div>
+    <div>v1.0 · Tuesday 12 May 2026</div>
+  </div>
+</footer>
+
+<!-- ============ UPGRADE MODAL ============ -->
+<div class="modal-backdrop hidden" id="upgradeModal" role="dialog">
+  <div class="modal" style="position: relative; max-width: 480px;">
+    <button class="modal-close" onclick="closeUpgrade()">×</button>
+    <p class="eyebrow">Upgrade your run</p>
+    <h2 style="font-size: 24px; margin-bottom: 8px;">Unlock the full intelligence package</h2>
+    <p class="muted-sm" style="margin-bottom: 24px;">You're on Free Preview. Upgrade to access the full content library, six AI-generated hero videos, weekly auto-refresh, and the polished PDF report.</p>
+    <a href="pricing.html" class="btn btn-gold btn-block btn-lg">See plans <i class="ti ti-arrow-right"></i></a>
+    <button class="btn btn-ghost btn-block mt-2" onclick="closeUpgrade()">Maybe later</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const plan = CYOB.plan;
+  const intake = CYOB.intake;
+  const user = CYOB.user;
+  const tier = CYOB.tier;
+
+  // Guard
+  if (!plan || !intake) {
+    CYOB.go('index.html');
+  }
+
+  // User badge
+  if (user) {
+    document.getElementById('userBadge').textContent = user.email;
+  } else {
+    document.getElementById('userBadge').innerHTML = '<a href="login.html" style="color: var(--text);">Login</a>';
+  }
+
+  // Target bar
+  function initials(s) {
+    return (s || '').split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  }
+  if (intake) {
+    document.getElementById('companyAvatar').textContent = initials(intake.company);
+    document.getElementById('companyTitle').textContent = intake.company;
+    document.getElementById('targetMeta').textContent =
+      [intake.industry, intake.geography, intake.size, intake.vibe].filter(Boolean).join(' · ');
+    document.getElementById('industryName').textContent = intake.industry + (intake.geography ? ' · ' + intake.geography : '');
+  }
+
+  // KPI cards
+  const kpiGrid = document.getElementById('kpiGrid');
+  plan.pulse.forEach(k => {
+    const card = document.createElement('div');
+    card.className = 'stat';
+    const delta = k.dir === 'up' ? `<div class="stat-delta up">${k.delta}</div>`
+                : k.dir === 'down' ? `<div class="stat-delta down">${k.delta}</div>`
+                : `<div class="stat-delta flat">${k.delta}</div>`;
+    card.innerHTML = `<div class="stat-label">${k.label}</div><div class="stat-value">${k.value}</div>${delta}`;
+    kpiGrid.appendChild(card);
+  });
+
+  // TRENDS
+  const trendList = document.getElementById('trendList');
+  plan.trends.forEach((t, i) => {
+    const dirColor = t.dir.includes('up') ? 'var(--green)' : (t.dir.includes('down') ? 'var(--red)' : 'var(--text-3)');
+    const arrow = t.dir.includes('up') ? '↑' : (t.dir.includes('down') ? '↓' : '→');
+    const div = document.createElement('div');
+    div.className = 'tbar';
+    div.innerHTML = `
+      <div class="tbar-head">
+        <span class="tbar-name">${t.name}</span>
+        <span class="tbar-val" style="color: ${dirColor};">${arrow} ${t.heat}</span>
+      </div>
+      <div class="bar"><span style="width: ${t.heat}%; background: ${dirColor};"></span></div>
+    `;
+    trendList.appendChild(div);
+  });
+
+  // GAPS
+  const gapList = document.getElementById('gapList');
+  plan.gaps.slice(0, 6).forEach(g => {
+    const sevColor = g.sevTag === 'red' ? 'tag-red' : (g.sevTag === 'amber' ? 'tag-amber' : 'tag-blue');
+    const bgColor = g.sevTag === 'red' ? 'rgba(239,111,108,0.06)' : (g.sevTag === 'amber' ? 'rgba(245,162,93,0.05)' : 'rgba(108,180,245,0.04)');
+    const borderColor = g.sevTag === 'red' ? 'rgba(239,111,108,0.18)' : (g.sevTag === 'amber' ? 'rgba(245,162,93,0.18)' : 'rgba(108,180,245,0.18)');
+    const div = document.createElement('div');
+    div.style.cssText = `padding: 11px 14px; background: ${bgColor}; border: 0.5px solid ${borderColor}; border-radius: 9px; margin-bottom: 8px;`;
+    div.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span style="font-size: 12.5px; color: var(--text); font-weight: 500;">${g.name}</span>
+        <span class="tag ${sevColor}">${g.severity}</span>
+      </div>
+      <div style="font-size: 11.5px; color: var(--text-3); line-height: 1.5;">${g.market}</div>
+    `;
+    gapList.appendChild(div);
+  });
+
+  // PRIORITIES
+  const priorityGrid = document.getElementById('priorityGrid');
+  plan.priorities.forEach(p => {
+    const card = document.createElement('div');
+    card.style.cssText = 'padding: 16px; background: var(--surface); border-radius: 11px; border: 0.5px solid var(--border);';
+    card.innerHTML = `
+      <div style="font-size: 32px; font-weight: 500; color: var(--text); letter-spacing: -0.025em; line-height: 1;">${p.rank}</div>
+      <h3 style="font-size: 13.5px; font-weight: 500; margin-top: 10px; line-height: 1.3;">${p.name}</h3>
+      <p style="font-size: 11.5px; color: var(--text-3); line-height: 1.5; margin-top: 6px;">${p.logic.substring(0, 130)}...</p>
+      <div class="pill-row" style="margin-top: 8px; margin-bottom: 0;">
+        <span class="tag">${p.horizon}</span>
+      </div>
+    `;
+    priorityGrid.appendChild(card);
+  });
+
+  // COMPETITORS
+  const competitorList = document.getElementById('competitorList');
+  document.getElementById('competitorTag').textContent = (plan.competitors || []).length + ' tracked';
+  (plan.competitors || []).slice(0, 5).forEach(c => {
+    const threatColor = c.threat === 'High' ? 'tag-red' : (c.threat === 'Medium' ? 'tag-amber' : 'tag-blue');
+    const div = document.createElement('div');
+    div.style.cssText = 'padding: 11px 14px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px;';
+    div.innerHTML = `
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 13px; color: var(--text); font-weight: 500;">${c.name}</div>
+        <div style="font-size: 11.5px; color: var(--text-3); line-height: 1.4; margin-top: 3px;">${c.strength}</div>
+      </div>
+      <span class="tag ${threatColor}" style="flex-shrink: 0;">${c.threat}</span>
+    `;
+    competitorList.appendChild(div);
+  });
+
+  // FUTURE
+  const futureList = document.getElementById('futureList');
+  plan.future.forEach(f => {
+    const div = document.createElement('div');
+    div.style.cssText = `padding: 13px 14px 13px 18px; border-left: 2px solid ${f.color}; background: ${f.color.replace('var(--', 'rgba(').replace(')', ',0.04)').replace('green', '125,211,168').replace('blue', '108,180,245').replace('purple', '201,163,245')}; border-radius: 0 9px 9px 0; margin-bottom: 8px;`;
+    div.innerHTML = `
+      <div style="font-size: 10.5px; font-weight: 500; letter-spacing: 0.1em; color: ${f.color};">${f.horizon.toUpperCase()}</div>
+      <div style="font-size: 13px; color: var(--text); line-height: 1.5; margin-top: 5px;">${f.prediction}</div>
+      <div class="pill-row" style="margin: 8px 0 0;">
+        <span class="tag" style="font-size: 10.5px;">${f.confidence}</span>
+      </div>
+    `;
+    futureList.appendChild(div);
+  });
+
+  // REFRESH BUTTON
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    if (!plan || !intake) return;
+    const prompt = CYOB.buildRefreshPrompt(intake, plan);
+    CYOB.copy(prompt);
+    CYOB.toast('Refresh prompt copied — paste it into Claude');
+    setTimeout(() => {
+      window.open('https://claude.ai/new', '_blank');
+    }, 500);
+  });
+
+  // UPGRADE
+  function openUpgrade() {
+    document.getElementById('upgradeModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeUpgrade() {
+    document.getElementById('upgradeModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('upgradeBtn').addEventListener('click', openUpgrade);
+  document.getElementById('upgradeModal').addEventListener('click', e => {
+    if (e.target.id === 'upgradeModal') closeUpgrade();
+  });
+  window.closeUpgrade = closeUpgrade;
+
+  // PDF download (mocked — opens print)
+  function downloadPDF() {
+    CYOB.toast('Generating PDF... opening print dialog in your browser');
+    setTimeout(() => CYOB.go('plan.html?print=1'), 600);
+  }
+  window.downloadPDF = downloadPDF;
+</script>
+</body>
+</html>

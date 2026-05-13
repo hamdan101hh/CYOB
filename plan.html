@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategic plan — cyob</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+<style>
+  .plan-toc {
+    position: sticky;
+    top: 60px;
+    background: rgba(8,8,12,0.85);
+    backdrop-filter: blur(20px);
+    z-index: 40;
+    border-bottom: 0.5px solid var(--border);
+    padding: 14px 0;
+  }
+  .plan-toc-inner { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .plan-toc a {
+    padding: 7px 14px;
+    font-size: 12.5px;
+    color: var(--text-3);
+    border-radius: 7px;
+    white-space: nowrap;
+    font-weight: 450;
+    transition: all 0.15s;
+  }
+  .plan-toc a:hover { background: var(--surface); color: var(--text); }
+  .plan-toc a.active { background: var(--surface-2); color: var(--text); }
+  .plan-section { padding: 60px 0; scroll-margin-top: 120px; }
+  .plan-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 760px) { .roadmap-grid { grid-template-columns: 1fr; } }
+  .milestone-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: rgba(125,211,168,0.1);
+    border: 0.5px solid rgba(125,211,168,0.25);
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .month-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 4px;
+    padding: 0 4px;
+  }
+  .month-divider span:first-child {
+    font-size: 11px;
+    color: var(--text-4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .month-divider hr {
+    flex: 1;
+    border: 0;
+    height: 0.5px;
+    background: var(--border);
+  }
+  .campaign-block { padding: 28px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 18px; }
+  .campaign-grid { display: grid; grid-template-columns: 240px 1fr; gap: 28px; }
+  @media (max-width: 760px) { .campaign-grid { grid-template-columns: 1fr; } }
+  .campaign-meta-img {
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #1a1a26, #2a2a3a);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  @media print {
+    .topbar, .plan-toc, .no-print, footer { display: none !important; }
+    body { background: white !important; color: black !important; }
+    .card, .stat { background: white !important; border: 1px solid #ddd !important; }
+    h1, h2, h3, p, .muted { color: black !important; }
+    .plan-section { padding: 24px 0; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar no-print">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">cy</div>
+      <div class="logo-text">
+        <span class="name">cyob</span>
+        <span class="logo-sub">strategic intelligence</span>
+      </div>
+    </a>
+    <nav class="topbar-nav">
+      <a href="index.html">Start</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="plan.html" class="active">Plan</a>
+      <a href="library.html">Library</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="topbar-meta">
+      <span id="userBadge" style="padding: 4px 10px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 999px; font-size: 11px;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="plan-toc no-print">
+  <div class="wrap-lg plan-toc-inner">
+    <a href="#overview" class="active">Overview</a>
+    <a href="#trends">Trend radar</a>
+    <a href="#gaps">Gap analysis</a>
+    <a href="#strategy">Strategy</a>
+    <a href="#roadmap">6-month roadmap</a>
+    <a href="#campaigns">Campaigns</a>
+    <a href="#future">Future</a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<section style="padding: 40px 0 20px;">
+  <div class="wrap-lg">
+    <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 16px;">
+      <div>
+        <p class="eyebrow">Strategic intelligence plan</p>
+        <h1 style="font-size: 36px; margin: 4px 0 6px;" id="companyTitle">—</h1>
+        <p class="muted" id="targetMeta" style="font-size: 14px;">—</p>
+      </div>
+      <div class="flex gap-2 no-print" style="flex-wrap: wrap;">
+        <button class="btn" id="refreshBtn"><i class="ti ti-refresh"></i> Refresh trends with Claude</button>
+        <button class="btn" onclick="window.print()"><i class="ti ti-printer"></i> Print / save PDF</button>
+        <a href="library.html" class="btn"><i class="ti ti-palette"></i> Open library</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section class="plan-section" id="overview">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">01 · Executive overview</p>
+        <h2>The one-page memo</h2>
+      </div>
+      <span class="muted-sm">From Agent 09 · Synthesis</span>
+    </div>
+
+    <div class="grid grid-2" style="gap: 18px;">
+      <div class="card">
+        <h3 style="color: var(--text-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">The situation</h3>
+        <p id="memoSituation" style="margin-top: 10px; color: var(--text); font-size: 14.5px; line-height: 1.6;"></p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--text-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">The opportunity</h3>
+        <p id="memoOpp" style="margin-top: 10px; color: var(--text); font-size: 14.5px; line-height: 1.6;"></p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--text-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">The threat</h3>
+        <p id="memoThreat" style="margin-top: 10px; color: var(--text); font-size: 14.5px; line-height: 1.6;"></p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--text-3); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">The recommendation</h3>
+        <p id="memoRec" style="margin-top: 10px; color: var(--text); font-size: 14.5px; line-height: 1.6;"></p>
+      </div>
+    </div>
+
+    <div class="card mt-4" style="background: linear-gradient(180deg, rgba(212,184,150,0.04), transparent 80%); border-color: rgba(212,184,150,0.2);">
+      <h3 style="color: var(--gold); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">The 12-month bet</h3>
+      <p id="memoBet" style="margin-top: 10px; color: var(--text); font-size: 18px; font-style: italic; line-height: 1.55;"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TREND RADAR -->
+<section class="plan-section" id="trends">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">02 · Trend radar</p>
+        <h2>What's moving — with evidence</h2>
+      </div>
+      <span class="muted-sm">From Agent 02 · Trend Analyst</span>
+    </div>
+
+    <div class="card">
+      <div id="trendListFull"></div>
+    </div>
+
+    <div class="card mt-4" style="background: rgba(108,180,245,0.04); border-color: rgba(108,180,245,0.2);">
+      <h3 style="color: var(--blue); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">Refresh with live signal</h3>
+      <p style="margin-top: 10px; color: var(--text-2); font-size: 13.5px; line-height: 1.6;">Click the refresh button at the top of the page. Claude opens with your full company context already loaded — it web-searches the last 30 days of TikTok, Reels, search, and ad-creative signal, returns updated trends with evidence URLs. Paste the JSON back to update this radar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GAPS -->
+<section class="plan-section" id="gaps">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">03 · Gap analysis</p>
+        <h2>Where you're exposed</h2>
+      </div>
+      <span class="muted-sm">From Agent 05 · Gap Detection</span>
+    </div>
+    <div id="gapListFull"></div>
+  </div>
+</section>
+
+<!-- STRATEGY -->
+<section class="plan-section" id="strategy">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">04 · Strategic priorities</p>
+        <h2>The five moves to make</h2>
+      </div>
+      <span class="muted-sm">From Agent 06 · Strategist</span>
+    </div>
+
+    <div class="card mt-4" style="background: linear-gradient(180deg, rgba(212,184,150,0.04), transparent 70%); border-color: rgba(212,184,150,0.2); margin-bottom: 24px;">
+      <h3 style="color: var(--gold); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">Strategic north star</h3>
+      <p id="northStar" style="margin-top: 10px; color: var(--text); font-size: 20px; font-style: italic; line-height: 1.5;"></p>
+    </div>
+
+    <div id="priorityListFull"></div>
+  </div>
+</section>
+
+<!-- 6-MONTH ROADMAP -->
+<section class="plan-section" id="roadmap">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">05 · Execution roadmap</p>
+        <h2>The 6-month plan, week by week</h2>
+      </div>
+      <span class="muted-sm">26 weeks · 6 milestones</span>
+    </div>
+
+    <div class="roadmap-grid" id="roadmapGrid"></div>
+  </div>
+</section>
+
+<!-- CAMPAIGNS PREVIEW -->
+<section class="plan-section" id="campaigns">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">06 · Hero campaigns</p>
+        <h2>Four campaigns. Production-ready.</h2>
+      </div>
+      <a href="library.html" class="btn btn-sm">Full library <i class="ti ti-arrow-right"></i></a>
+    </div>
+    <div id="campaignPreview"></div>
+  </div>
+</section>
+
+<!-- FUTURE -->
+<section class="plan-section" id="future">
+  <div class="wrap-lg">
+    <div class="plan-section-head">
+      <div>
+        <p class="eyebrow">07 · Future horizons</p>
+        <h2>1, 3, and 5-year predictions</h2>
+      </div>
+      <span class="muted-sm">From Agent 08 · Future Engine</span>
+    </div>
+    <div class="grid grid-3" id="futureGrid"></div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="sm no-print">
+  <div class="wrap-lg">
+    <div class="card card-elevated text-center" style="padding: 40px 32px;">
+      <p class="eyebrow">Keep building</p>
+      <h2 style="font-size: 22px; margin-bottom: 8px;">Open the full content library next.</h2>
+      <p class="muted" style="max-width: 480px; margin: 0 auto 24px;">All hero campaign visuals, AI image prompts, video prompts, copy templates — ready to use.</p>
+      <a href="library.html" class="btn btn-primary"><i class="ti ti-palette"></i> Open library</a>
+    </div>
+  </div>
+</section>
+
+<footer class="no-print">
+  <div class="wrap footer-inner">
+    <div>cyob.live · strategic intelligence</div>
+    <div>v1.0 · Tuesday 12 May 2026</div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+  const plan = CYOB.plan;
+  const intake = CYOB.intake;
+  const user = CYOB.user;
+
+  if (!plan || !intake) {
+    location.href = 'index.html';
+  }
+
+  if (user) document.getElementById('userBadge').textContent = user.email;
+
+  // Header
+  document.getElementById('companyTitle').textContent = intake.company;
+  document.getElementById('targetMeta').textContent = [intake.industry, intake.geography, intake.size, intake.vibe].filter(Boolean).join(' · ');
+
+  // ===== EXECUTIVE MEMO =====
+  const co = intake.company;
+  const ind = intake.industry;
+  document.getElementById('memoSituation').textContent =
+    `${co} operates in ${ind} with a ${(intake.vibe || '').toLowerCase()} brand posture targeting ${(intake.audience || '').substring(0, 100)}. The category is shifting toward creator-led discovery, AI-personalized journeys, and post-purchase ecosystem value — moves ${co} has not yet structurally claimed.`;
+  document.getElementById('memoOpp').textContent =
+    `The category rewards human storytelling, vertical-first content, and multilingual discovery. ${co} holds existing assets (customers, brand recall, distribution) that competitors would pay to acquire. The opportunity is to activate what already exists rather than build new.`;
+  document.getElementById('memoThreat').textContent =
+    `Smaller, faster competitors are claiming the emotional, lifestyle, and AI-discovery layer ${co} currently leaves vacant. Twelve months of inaction compresses pricing power by an estimated 6–10 points as competitors compound their resident-led IP.`;
+  document.getElementById('memoRec').textContent =
+    `Make one strategic shift over 18 months: from a product-led brand to a customer-led brand. Stop selling the product. Start selling the life around it. Build a native creator team. Stand up an AI concierge as a category-defining asset. Productize "Life After Purchase" as a marketed offer.`;
+  document.getElementById('memoBet').textContent =
+    `${co} will stop selling products and start selling the life inside them — and will be remembered for it the way the products themselves are remembered now.`;
+
+  // ===== TRENDS =====
+  const trendListFull = document.getElementById('trendListFull');
+  plan.trends.forEach((t, i) => {
+    const dirColor = t.dir.includes('up') ? 'var(--green)' : (t.dir.includes('down') ? 'var(--red)' : 'var(--text-3)');
+    const arrow = t.dir.includes('up') ? '↑' : (t.dir.includes('down') ? '↓' : '→');
+    const block = document.createElement('div');
+    block.style.cssText = 'padding: 16px 0; border-bottom: 0.5px solid var(--border);';
+    if (i === plan.trends.length - 1) block.style.borderBottom = 'none';
+    let evidenceHtml = '';
+    if (t.evidence && t.evidence.length) {
+      evidenceHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 0.5px dashed var(--border);">' +
+        t.evidence.map(e => `<a href="${e.url}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue); margin-right: 14px;"><i class="ti ti-external-link" style="font-size: 12px;"></i>${e.label}</a>`).join('') +
+        '</div>';
+    }
+    block.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span style="font-size: 14.5px; color: var(--text); font-weight: 500;">${t.name}</span>
+        <span style="font-size: 12px; color: ${dirColor}; font-weight: 500;">${arrow} heat ${t.heat}</span>
+      </div>
+      <div class="bar" style="margin-bottom: 10px;"><span style="width: ${t.heat}%; background: ${dirColor};"></span></div>
+      <p style="font-size: 13px; color: var(--text-3); line-height: 1.55; margin: 0;">${t.why}</p>
+      ${evidenceHtml}
+    `;
+    trendListFull.appendChild(block);
+  });
+
+  // ===== GAPS =====
+  const gapListFull = document.getElementById('gapListFull');
+  plan.gaps.forEach((g, i) => {
+    const sevColor = g.sevTag === 'red' ? 'tag-red' : (g.sevTag === 'amber' ? 'tag-amber' : 'tag-blue');
+    const card = document.createElement('div');
+    card.className = 'card mb-2';
+    card.style.marginBottom = '12px';
+    card.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <h3 style="font-size: 17px; font-weight: 500;">${i + 1}. ${g.name}</h3>
+        <span class="tag ${sevColor}">${g.severity}</span>
+      </div>
+      <div class="grid grid-2" style="gap: 14px; margin-top: 12px;">
+        <div>
+          <p style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 4px; font-weight: 500;">Currently</p>
+          <p style="font-size: 13px; color: var(--text-2); line-height: 1.55; margin: 0;">${g.doing}</p>
+        </div>
+        <div>
+          <p style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 4px; font-weight: 500;">Market reality</p>
+          <p style="font-size: 13px; color: var(--text-2); line-height: 1.55; margin: 0;">${g.market}</p>
+        </div>
+        <div>
+          <p style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 4px; font-weight: 500;">Exploiter</p>
+          <p style="font-size: 13px; color: var(--text-2); line-height: 1.55; margin: 0;">${g.exploiter}</p>
+        </div>
+        <div>
+          <p style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 4px; font-weight: 500;">Remediation</p>
+          <p style="font-size: 13px; color: var(--text); line-height: 1.55; margin: 0;">${g.fix}</p>
+        </div>
+      </div>
+    `;
+    gapListFull.appendChild(card);
+  });
+
+  // ===== STRATEGY =====
+  document.getElementById('northStar').textContent =
+    `Stop selling the product. Start selling the life around it. ${co}'s strongest assets are not what it builds — they are the people who chose it.`;
+
+  const priorityListFull = document.getElementById('priorityListFull');
+  plan.priorities.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card mb-2';
+    card.style.marginBottom = '12px';
+    card.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <div style="display: flex; align-items: baseline; gap: 14px;">
+          <span style="font-size: 32px; font-weight: 500; color: var(--text-3); letter-spacing: -0.025em;">${p.rank}</span>
+          <h3 style="font-size: 20px; font-weight: 500;">${p.name}</h3>
+        </div>
+        <div class="flex gap-2">
+          <span class="tag">${p.horizon}</span>
+          <span class="tag">${p.budget}</span>
+        </div>
+      </div>
+      <p style="font-size: 14px; color: var(--text-2); line-height: 1.6; margin: 0 0 10px;">${p.logic}</p>
+      <p style="font-size: 12.5px; color: var(--text-4); margin: 0;"><strong style="color: var(--text-3);">Owner:</strong> ${p.owner}</p>
+    `;
+    priorityListFull.appendChild(card);
+  });
+
+  // ===== ROADMAP =====
+  const roadmapGrid = document.getElementById('roadmapGrid');
+  const monthLabels = {
+    1: 'Month 1 · Foundation',
+    5: 'Month 2 · Production',
+    9: 'Month 3 · Launch',
+    13: 'Month 4 · Scale',
+    17: 'Month 5 · Compound',
+    21: 'Month 6 · Review',
+  };
+  plan.roadmap.forEach((w, i) => {
+    if (monthLabels[i + 1]) {
+      const sep = document.createElement('div');
+      sep.className = 'month-divider';
+      sep.innerHTML = `<span>${monthLabels[i + 1]}</span><hr>`;
+      roadmapGrid.appendChild(sep);
+    }
+    const wk = document.createElement('div');
+    wk.className = 'week' + (w.milestone ? ' active' : '');
+    let milestone = w.milestone ? `<div class="milestone-badge"><i class="ti ti-flag" style="font-size: 9px;"></i> ${w.milestone}</div>` : '';
+    wk.innerHTML = `
+      <div class="week-head">${w.week}</div>
+      <div class="week-body">${w.body}</div>
+      ${milestone}
+    `;
+    roadmapGrid.appendChild(wk);
+  });
+
+  // ===== CAMPAIGNS PREVIEW =====
+  const campaignPreview = document.getElementById('campaignPreview');
+  plan.campaigns.forEach((c, i) => {
+    const block = document.createElement('div');
+    block.className = 'campaign-block';
+    // Generate an inline SVG visual based on artStyle
+    const svg = generateCampaignSVG(c.artStyle, c.title, i);
+    block.innerHTML = `
+      <div class="campaign-grid">
+        <div class="campaign-meta-img">${svg}</div>
+        <div>
+          <p class="eyebrow" style="margin-bottom: 6px;">Campaign ${(i + 1).toString().padStart(2, '0')} · ${c.type}</p>
+          <h2 style="font-size: 26px; margin-bottom: 12px;">${c.title}</h2>
+          <p style="font-size: 14.5px; color: var(--text-2); line-height: 1.65; margin-bottom: 14px;">${c.bigIdea}</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div>
+              <p style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 6px; font-weight: 500;">Cutdowns (${c.cutdowns.length})</p>
+              <p style="font-size: 12.5px; color: var(--text-3); margin: 0; line-height: 1.5;">${c.cutdowns.slice(0,3).join(' · ')}${c.cutdowns.length > 3 ? '…' : ''}</p>
+            </div>
+            <div>
+              <p style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 6px; font-weight: 500;">OOH (${c.ooh.length})</p>
+              <p style="font-size: 12.5px; color: var(--text-3); margin: 0; line-height: 1.5; font-style: italic;">"${c.ooh[0]}"</p>
+            </div>
+          </div>
+          <a href="library.html#campaign-${i}" class="btn btn-sm">Open in library <i class="ti ti-arrow-right"></i></a>
+        </div>
+      </div>
+    `;
+    campaignPreview.appendChild(block);
+  });
+
+  // ===== FUTURE =====
+  const futureGrid = document.getElementById('futureGrid');
+  plan.future.forEach(f => {
+    const bg = f.color.replace('var(--', 'rgba(').replace(')', ',0.04)')
+      .replace('green', '125,211,168').replace('blue', '108,180,245').replace('purple', '201,163,245');
+    const card = document.createElement('div');
+    card.style.cssText = `padding: 24px; background: ${bg}; border: 0.5px solid ${f.color.replace('var(--', 'rgba(').replace(')', ',0.2)').replace('green', '125,211,168').replace('blue', '108,180,245').replace('purple', '201,163,245')}; border-radius: var(--radius);`;
+    card.innerHTML = `
+      <div style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; color: ${f.color}; text-transform: uppercase;">${f.horizon}</div>
+      <h3 style="font-size: 16px; font-weight: 500; margin-top: 12px; line-height: 1.35;">${f.prediction}</h3>
+      <div class="pill-row" style="margin: 12px 0;">
+        <span class="tag">Confidence: ${f.confidence}</span>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-3); line-height: 1.55; margin: 0 0 12px;"><strong style="color: var(--text-2);">Signal:</strong> ${f.signal}</p>
+      <p style="font-size: 12.5px; color: var(--text-2); line-height: 1.55; margin: 0;"><strong style="color: var(--text);">Bet:</strong> ${f.bet}</p>
+    `;
+    futureGrid.appendChild(card);
+  });
+
+  // ===== REFRESH =====
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    const prompt = CYOB.buildRefreshPrompt(intake, plan);
+    CYOB.copy(prompt);
+    CYOB.toast('Refresh prompt copied — opening Claude');
+    setTimeout(() => window.open('https://claude.ai/new', '_blank'), 500);
+  });
+
+  // ===== SCROLL SPY for TOC =====
+  const sections = document.querySelectorAll('.plan-section');
+  const tocLinks = document.querySelectorAll('.plan-toc a');
+  function onScroll() {
+    let current = '';
+    sections.forEach(s => {
+      const top = s.getBoundingClientRect().top;
+      if (top < 200) current = s.id;
+    });
+    tocLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // ===== SVG GENERATOR for campaigns =====
+  function generateCampaignSVG(style, title, idx) {
+    if (style === 'cinematic-restraint') {
+      // Quiet hour - silhouette + window
+      return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sky${idx}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a1a2e"/>
+            <stop offset="60%" stop-color="#3a2a4a"/>
+            <stop offset="100%" stop-color="#d4a878"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="400" fill="url(#sky${idx})"/>
+        <g opacity="0.4">
+          <rect x="30" y="280" width="20" height="80" fill="#0a0a14"/>
+          <rect x="60" y="240" width="22" height="120" fill="#0a0a14"/>
+          <rect x="92" y="220" width="18" height="140" fill="#0a0a14"/>
+          <rect x="120" y="200" width="24" height="160" fill="#0a0a14"/>
+          <rect x="154" y="170" width="20" height="190" fill="#0a0a14"/>
+          <rect x="184" y="150" width="26" height="210" fill="#0a0a14"/>
+          <rect x="220" y="190" width="18" height="170" fill="#0a0a14"/>
+          <rect x="248" y="230" width="22" height="130" fill="#0a0a14"/>
+          <rect x="280" y="260" width="20" height="100" fill="#0a0a14"/>
+        </g>
+        <g opacity="0.6">
+          <circle cx="80" cy="290" r="1.2" fill="#fff"/>
+          <circle cx="120" cy="260" r="1" fill="#f5a25d"/>
+          <circle cx="170" cy="240" r="1.5" fill="#fff"/>
+          <circle cx="200" cy="220" r="1" fill="#f5a25d"/>
+          <circle cx="240" cy="280" r="1.2" fill="#fff"/>
+          <circle cx="290" cy="300" r="1" fill="#f5a25d"/>
+        </g>
+        <rect x="280" y="80" width="100" height="240" fill="#0a0a14" opacity="0.85"/>
+        <rect x="290" y="100" width="80" height="190" fill="#3a2a4a" opacity="0.6"/>
+        <ellipse cx="340" cy="220" rx="18" ry="50" fill="#0a0a14"/>
+        <text x="200" y="385" font-family="serif" font-size="11" fill="#888" text-anchor="middle" opacity="0.5" letter-spacing="3">THE QUIET HOUR</text>
+      </svg>`;
+    } else if (style === 'warm-cinematic') {
+      // Inherited light - lanterns
+      return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="warm${idx}" cx="0.5" cy="0.5" r="0.7">
+            <stop offset="0%" stop-color="#d4a060"/>
+            <stop offset="60%" stop-color="#6a3a30"/>
+            <stop offset="100%" stop-color="#1a0a14"/>
+          </radialGradient>
+          <radialGradient id="glow${idx}" cx="0.5" cy="0.4" r="0.5">
+            <stop offset="0%" stop-color="#f5d090" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#f5d090" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="400" height="400" fill="url(#warm${idx})"/>
+        <ellipse cx="200" cy="180" rx="180" ry="120" fill="url(#glow${idx})"/>
+        <g>
+          <line x1="120" y1="50" x2="120" y2="120" stroke="#3a2a1a" stroke-width="1"/>
+          <ellipse cx="120" cy="140" rx="18" ry="24" fill="#d4a060" opacity="0.85"/>
+          <line x1="200" y1="60" x2="200" y2="100" stroke="#3a2a1a" stroke-width="1"/>
+          <ellipse cx="200" cy="120" rx="22" ry="28" fill="#f5c070" opacity="0.95"/>
+          <line x1="280" y1="50" x2="280" y2="120" stroke="#3a2a1a" stroke-width="1"/>
+          <ellipse cx="280" cy="140" rx="18" ry="24" fill="#d4a060" opacity="0.85"/>
+        </g>
+        <rect x="80" y="280" width="240" height="40" fill="#2a1a14" opacity="0.7"/>
+        <rect x="120" y="320" width="160" height="6" fill="#3a2a1a"/>
+        <circle cx="140" cy="305" r="14" fill="#d4a060" opacity="0.6"/>
+        <circle cx="200" cy="305" r="16" fill="#f5d090" opacity="0.7"/>
+        <circle cx="260" cy="305" r="14" fill="#d4a060" opacity="0.6"/>
+        <text x="200" y="385" font-family="serif" font-size="11" fill="#d4a060" text-anchor="middle" opacity="0.6" letter-spacing="3">INHERITED LIGHT</text>
+      </svg>`;
+    } else if (style === 'documentary') {
+      // Why I Stayed - portrait silhouette
+      return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="doc${idx}" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#3a3a44"/>
+            <stop offset="100%" stop-color="#1a1a22"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="400" fill="url(#doc${idx})"/>
+        <rect x="240" y="40" width="120" height="180" fill="#5a4a40" opacity="0.4"/>
+        <rect x="245" y="45" width="110" height="170" fill="#7a6a5a" opacity="0.5"/>
+        <ellipse cx="180" cy="180" rx="60" ry="70" fill="#2a2a30"/>
+        <path d="M 120 250 Q 120 220 180 220 Q 240 220 240 250 L 240 400 L 120 400 Z" fill="#2a2a30"/>
+        <ellipse cx="170" cy="170" rx="3" ry="2" fill="#5a4a3a"/>
+        <ellipse cx="190" cy="170" rx="3" ry="2" fill="#5a4a3a"/>
+        <text x="200" y="385" font-family="sans-serif" font-size="11" fill="#888" text-anchor="middle" opacity="0.5" letter-spacing="3">WHY I STAYED</text>
+      </svg>`;
+    } else if (style === 'monochrome-luxury') {
+      // Address - mono restrained
+      return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="400" fill="#f5f5f0"/>
+        <rect x="50" y="50" width="300" height="300" fill="#fff" stroke="#0a0a0f" stroke-width="0.5"/>
+        <g transform="translate(200, 200)">
+          <rect x="-20" y="-50" width="40" height="100" fill="#0a0a0f"/>
+          <circle cx="0" cy="-30" r="6" fill="#f5f5f0"/>
+          <rect x="-8" y="-10" width="16" height="60" fill="#f5f5f0"/>
+        </g>
+        <text x="200" y="320" font-family="serif" font-size="14" fill="#0a0a0f" text-anchor="middle" letter-spacing="6">THE ADDRESS</text>
+        <text x="200" y="340" font-family="serif" font-size="9" fill="#0a0a0f" text-anchor="middle" letter-spacing="3" opacity="0.6">YOU DON'T NEED TO SAY</text>
+      </svg>`;
+    }
+    // Default
+    return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="400" fill="#1a1a26"/>
+      <text x="200" y="200" font-family="serif" font-size="14" fill="#888" text-anchor="middle">${title}</text>
+    </svg>`;
+  }
+
+  // Auto-print if ?print=1
+  if (location.search.includes('print=1')) {
+    setTimeout(() => window.print(), 800);
+  }
+</script>
+</body>
+</html>
