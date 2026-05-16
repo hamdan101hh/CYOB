@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/weekly-refresh",
+      "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/cron/daily-refresh",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/cap-check",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/email/daily-summary",
+      "schedule": "0 17 * * *"
+    }
+  ]
+}

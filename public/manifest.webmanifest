@@ -1,0 +1,10 @@
+{
+  "name": "cyob",
+  "short_name": "cyob",
+  "description": "A private AI war room for industry intelligence and company strategy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08080c",
+  "theme_color": "#08080c",
+  "icons": []
+}
