@@ -168,16 +168,9 @@ async function main() {
     }),
   });
 
-  console.log("▶ Vercel: set production branch…");
-  await vercel(`/v9/projects/${projectId}`, {
-    method: "PATCH",
-    body: JSON.stringify({
-      link: {
-        ...project.link,
-        productionBranch: PRODUCTION_BRANCH,
-      },
-    }),
-  });
+  console.log(
+    "▶ Vercel: production branch (set manually in Environments if still main)",
+  );
 
   console.log("▶ Vercel: environment variables (production + preview)…");
   const targets = ["production", "preview"];
