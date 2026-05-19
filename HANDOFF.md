@@ -15,59 +15,46 @@
 
 Also added: Supabase magic-link callback, logout route, waitlist, enterprise inquiry, asset/PDF stubs, daily boss summary stub, PR/security docs.
 
+**While you were away:** `vercel.json` pins Next.js; legacy HTML moved to `prototype/` so Vercel no longer serves the old static site at `/`. See **`docs/VERCEL_5MIN.md`** for the full 5-minute Vercel + Supabase batch.
+
 Real Claude/OpenAI/Apify/Stripe/Resend/PDF run only after keys in `.env.local` and provider setup.
 
 ---
 
-## Your batch (~45–60 min)
+## Your batch (~5 min if code is pushed)
 
-### 1. Sync both servers
+**Start here:** [`docs/VERCEL_5MIN.md`](docs/VERCEL_5MIN.md)
+
+Quick checklist:
+
+1. **Push** `production` (if not already) → Vercel redeploys
+2. **Vercel** `cyob-k28y`: Framework **Next.js**, Node **20.x**, `NEXT_PUBLIC_APP_URL=https://cyob.site`, redeploy
+3. **Supabase** redirect URLs for `cyob.site`, `www`, `cyob-k28y.vercel.app`, localhost
+4. **Test** `https://cyob.site/login` (must be **200**, not 404)
+
+### Local dev (optional)
+
 ```powershell
 cd C:\Users\Desktop\cyob
 git pull
 npm.cmd install
-Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue
-npm.cmd run build
 npm.cmd run dev
 ```
 
-### 2. Supabase
-- Project with **createyourownbot.ai@gmail.com**
-- Run `supabase/migrations/000001_initial_schema.sql`
-- Auth → Email OTP on
-- Copy URL, anon, service role → `.env.local` + Vercel
-- Add redirect URLs:
-  - `http://localhost:3000/auth/callback`
-  - `http://localhost:3001/auth/callback` (if local dev uses 3001)
-  - `https://cyob.live/auth/callback` (launch)
-- Optional: customize email templates using `docs/SUPABASE_EMAIL_TEMPLATE.md`
+### Supabase redirect URLs
 
-### 3. `.env.local`
-Copy `.env.example`, fill keys, remove `SKIP_ENV_VALIDATION` when ready.
+```text
+http://localhost:3000/auth/callback
+https://cyob.site/auth/callback
+https://www.cyob.site/auth/callback
+https://cyob-k28y.vercel.app/auth/callback
+```
 
-### 4. GitHub
-- Branch `production` (never push `main` without approval)
-- PR → merge when preview looks good
+Site URL: `https://cyob.site`
 
-### 5. Vercel
-- Preview branch `production`
-- All env vars from `.env.local`
-- `CRON_SECRET` = random 32 chars
-- Cron schedules are in `vercel.json`
+### Security
 
-### 6. Paid APIs (your sign-in, no spend without OK)
-Anthropic, OpenAI, Stripe, Resend, fal.ai, Apify — paste keys into Vercel + local.
-
-### 7. Test
-1. localhost:3000  
-2. Start intake → Skip login (demo)  
-3. Preparing → Dashboard (trends/gaps)  
-4. Plan / Library / Pricing / Login  
-5. Supabase magic link → `/auth/callback` signs in
-
-### 8. Optional
-- Slack `#cyob-build` one message with preview URL  
-- Linear mark phases Done  
+Rotate **Supabase service_role** before public launch (may have appeared in prior tooling output).
 
 **Boss email:** `BOSS_EMAIL=hamdaaninh101@gmail.com` (digests after Resend).
 

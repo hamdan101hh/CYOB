@@ -11,7 +11,7 @@ export default function HomePage() {
       />
       <section className="relative mx-auto flex max-w-5xl flex-col gap-8 px-6 pb-24 pt-20 md:px-10 md:pb-32 md:pt-28">
         <p className="text-sm tracking-wide text-[var(--text-3)]">
-          cyob.live
+          cyob.site
         </p>
         <h1 className="max-w-3xl text-balance text-4xl leading-[1.08] text-[var(--text)] md:text-6xl">
           A private AI war room for industry intelligence and company

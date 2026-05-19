@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "A private AI war room for industry intelligence and company strategy.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://cyob.live",
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://cyob.site",
   ),
   manifest: "/manifest.webmanifest",
   appleWebApp: {

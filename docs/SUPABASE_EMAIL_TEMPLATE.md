@@ -25,5 +25,7 @@ http://localhost:3000/auth/callback
 For deployment, also add:
 
 ```text
-https://cyob.live/auth/callback
+https://cyob.site/auth/callback
+https://www.cyob.site/auth/callback
+https://cyob-k28y.vercel.app/auth/callback
 ```
