@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { isMonthlyCapExceeded } from "@/lib/services/cap";
+import { runAgent } from "@/lib/agents/run-agent";
+import type { AgentContext } from "@/lib/agents/context";
+import { getRunBundle } from "@/lib/data/get-run";
+import { isMonthlyCapExceeded, recordPipelineAgentCost } from "@/lib/services/cap";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
 const bodySchema = z.object({ run_id: z.string().uuid() });
 
 export async function POST(req: Request) {
@@ -31,22 +35,72 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: run } = await sb
-    .from("runs")
-    .select("id,user_id")
-    .eq("id", parsed.data.run_id)
-    .maybeSingle();
-
-  if (!run || run.user_id !== user.id) {
+  const bundle = await getRunBundle(parsed.data.run_id);
+  if (!bundle) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Re-run agent 02 only when Claude is wired; for now acknowledge request.
+  const prior: AgentContext["priorOutputs"] = {};
+  for (const [n, o] of Object.entries(bundle.outputs)) {
+    prior[Number(n)] = {
+      output_json: o.output_json,
+      output_text: o.output_text,
+    };
+  }
+
+  const ctx: AgentContext = {
+    intake: {
+      company: bundle.intake.company,
+      industry: bundle.intake.industry,
+      geography: bundle.intake.geography,
+      city: bundle.intake.city,
+      size: bundle.intake.size,
+      vibe: bundle.intake.vibe,
+      audience: bundle.intake.audience,
+      budget: bundle.intake.budget,
+    },
+    priorOutputs: prior,
+    tier: bundle.tier,
+  };
+
+  const piece = await runAgent(2, ctx);
+
   await sb.from("trend_refreshes").insert({
     run_id: parsed.data.run_id,
     triggered_by: "manual",
-    cost_cents: 0,
+    cost_cents: piece.costCents,
   });
 
-  return NextResponse.json({ ok: true, message: "Trend refresh queued (agent 02 wiring pending keys)." });
+  await sb
+    .from("agent_outputs")
+    .delete()
+    .eq("run_id", parsed.data.run_id)
+    .eq("agent_number", 2);
+
+  await sb.from("agent_outputs").insert({
+    run_id: parsed.data.run_id,
+    agent_number: 2,
+    agent_name: piece.agent_name,
+    status: "complete",
+    output_text: piece.output_text,
+    output_json: piece.output_json,
+    input_tokens: piece.inputTokens,
+    output_tokens: piece.outputTokens,
+    cost_cents: piece.costCents,
+  });
+
+  await recordPipelineAgentCost({
+    userId: user.id,
+    runId: parsed.data.run_id,
+    agentNumber: 2,
+    costCents: piece.costCents,
+  });
+
+  return NextResponse.json({
+    ok: true,
+    live: piece.live,
+    message: piece.live
+      ? "Trend analyst refreshed with live model."
+      : "Trend refresh saved (mock — add ANTHROPIC_API_KEY or OPENAI_API_KEY for live).",
+  });
 }

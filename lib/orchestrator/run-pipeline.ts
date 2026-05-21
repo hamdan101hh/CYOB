@@ -208,9 +208,9 @@ export async function executeRunPipeline(runId: string) {
         status: "complete",
         output_text: piece.output_text,
         output_json: piece.output_json,
-        input_tokens: 0,
-        output_tokens: 0,
-        cost_cents: 0,
+        input_tokens: piece.inputTokens,
+        output_tokens: piece.outputTokens,
+        cost_cents: piece.costCents,
       });
 
       if (userId) {
@@ -218,7 +218,7 @@ export async function executeRunPipeline(runId: string) {
           userId,
           runId,
           agentNumber: agent.number,
-          costCents: 0,
+          costCents: piece.costCents,
         });
       }
     }

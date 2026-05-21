@@ -11,8 +11,7 @@ export default function PricingPage() {
           Choose your depth
         </h1>
         <p className="mt-4 text-lg text-[var(--text-2)]">
-          Annual billing is the default. Stripe Checkout connects when you add keys
-          at the end of setup.
+          Annual billing is the default. Sign in to upgrade via Stripe Checkout.
         </p>
       </div>
       <PricingClient />

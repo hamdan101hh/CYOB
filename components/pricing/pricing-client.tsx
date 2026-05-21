@@ -26,6 +26,73 @@ const tiers = [
   },
 ] as const;
 
+type PaidPriceKey =
+  | "cyob_spark_monthly"
+  | "cyob_spark_annual"
+  | "cyob_studio_monthly"
+  | "cyob_studio_annual";
+
+function priceKeyForTier(
+  tierId: "spark" | "studio",
+  annual: boolean,
+): PaidPriceKey {
+  if (tierId === "spark") {
+    return annual ? "cyob_spark_annual" : "cyob_spark_monthly";
+  }
+  return annual ? "cyob_studio_annual" : "cyob_studio_monthly";
+}
+
+function CheckoutButton({
+  priceKey,
+  label,
+}: {
+  priceKey: PaidPriceKey;
+  label: string;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const startCheckout = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price_key: priceKey }),
+      });
+      const body = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !body.url) {
+        setError(body.error ?? "Checkout unavailable. Sign in or add Stripe keys.");
+        return;
+      }
+      window.location.href = body.url;
+    } catch {
+      setError("Network error. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => void startCheckout()}
+        className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--gold)]/50 bg-[color-mix(in_oklab,var(--gold)_16%,transparent)] text-sm font-medium text-[var(--text)] disabled:opacity-50"
+      >
+        {busy ? "Redirecting…" : label}
+      </button>
+      {error ? (
+        <p className="mt-2 text-xs text-[var(--red)]" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </>
+  );
+}
+
 export function PricingClient() {
   const [annual, setAnnual] = useState(true);
 
@@ -87,13 +154,19 @@ export function PricingClient() {
                 {price}
               </p>
               <p className="mt-3 text-sm text-[var(--text-2)]">{tier.blurb}</p>
-              <button
-                type="button"
-                disabled
-                className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-2)] text-sm font-medium text-[var(--text-2)]"
-              >
-                Checkout after Stripe setup
-              </button>
+              {tier.id === "free" ? (
+                <a
+                  href="/login"
+                  className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-2)] text-sm font-medium text-[var(--text)]"
+                >
+                  Start free
+                </a>
+              ) : (
+                <CheckoutButton
+                  priceKey={priceKeyForTier(tier.id, annual)}
+                  label={`Upgrade to ${tier.name}`}
+                />
+              )}
             </div>
           );
         })}
@@ -140,7 +213,7 @@ function WaitlistForm() {
     >
       <p className="text-sm font-medium text-[var(--text)]">Launch waitlist</p>
       <p className="mt-1 text-sm text-[var(--text-2)]">
-        Get notified when paid tiers and Stripe checkout go live.
+        Get notified about new tiers and features.
       </p>
       {done ? (
         <p className="mt-4 text-sm text-[var(--gold)]">You are on the list.</p>

@@ -1,5 +1,7 @@
 import Link from "next/link";
+
 import { TierLock } from "@/components/run/tier-lock";
+import { listRunAssets } from "@/lib/data/list-run-assets";
 import { requireRunBundle } from "@/lib/data/require-run";
 import { parseRunDisplay } from "@/lib/data/parse-run-display";
 
@@ -10,6 +12,7 @@ export default async function LibraryRunPage({
 }) {
   const { runId } = await params;
   const bundle = await requireRunBundle(runId, `/library/${runId}`);
+  const assets = await listRunAssets(runId);
 
   const locked = bundle.tier === "free";
   const display = parseRunDisplay(bundle);
@@ -17,6 +20,14 @@ export default async function LibraryRunPage({
     display.campaigns.length > 0
       ? display.campaigns
       : [{ name: "Campaign 1", big_idea: bundle.outputs[7]?.output_text }];
+
+  const assetsByCampaign = new Map<number, typeof assets>();
+  for (const asset of assets) {
+    const idx = asset.campaign_index ?? 0;
+    const list = assetsByCampaign.get(idx) ?? [];
+    list.push(asset);
+    assetsByCampaign.set(idx, list);
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-14 md:px-10">
@@ -38,6 +49,10 @@ export default async function LibraryRunPage({
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {campaigns.map((campaign, i) => {
           const index = i + 1;
+          const campaignAssets = assetsByCampaign.get(i) ?? [];
+          const hero = campaignAssets.find((a) => a.asset_type === "image");
+          const video = campaignAssets.find((a) => a.asset_type === "video");
+
           return (
             <TierLock key={campaign.name} locked={locked && index > 1} preview={locked && index === 1}>
               <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
@@ -53,11 +68,13 @@ export default async function LibraryRunPage({
                     title="Hero frame"
                     campaign={index}
                     accent="var(--gold)"
+                    imageUrl={hero?.public_url}
                   />
                   <PreviewTile
                     title="Video preview"
                     campaign={index}
                     accent="var(--blue)"
+                    imageUrl={video?.public_url}
                   />
                 </div>
               </div>
@@ -73,11 +90,29 @@ function PreviewTile({
   title,
   campaign,
   accent,
+  imageUrl,
 }: {
   title: string;
   campaign: number;
   accent: string;
+  imageUrl?: string | null;
 }) {
+  if (imageUrl) {
+    return (
+      <div className="relative aspect-video overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-3)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageUrl}
+          alt={`${title} for campaign ${campaign}`}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-3">
+          <p className="text-xs font-medium text-[var(--text)]">{title}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative aspect-video overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-3)]">
       <svg

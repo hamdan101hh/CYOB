@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireUser, verifyRunOwnership } from "@/lib/auth/session";
-import { isMonthlyCapExceeded } from "@/lib/services/cap";
+import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
+import { generateImage } from "@/lib/services/fal";
+import { isMonthlyCapExceeded, logSpending } from "@/lib/services/cap";
 
 const schema = z.object({
   run_id: z.string().uuid(),
@@ -31,11 +33,59 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Not found" }, { status: access.status });
   }
 
+  const admin = createSupabaseAdminClientOrNull();
+  if (!admin) {
+    return NextResponse.json(
+      { error: "Supabase admin not configured" },
+      { status: 503 },
+    );
+  }
+
+  let publicUrl: string | null = null;
+  let costCents = 0;
+  let providerError: string | undefined;
+
+  if (parsed.data.asset_type === "image") {
+    const result = await generateImage({ prompt: parsed.data.prompt });
+    publicUrl = result.publicUrl;
+    costCents = result.costCents;
+    providerError = result.error;
+  }
+
+  const { data: row } = await admin
+    .from("generated_assets")
+    .insert({
+      run_id: parsed.data.run_id,
+      asset_type: parsed.data.asset_type,
+      campaign_index: parsed.data.campaign_index ?? 0,
+      prompt: parsed.data.prompt,
+      public_url: publicUrl,
+      storage_path: publicUrl ? null : "pending",
+      cost_cents: costCents,
+    })
+    .select("id,public_url,asset_type")
+    .single();
+
+  if (costCents > 0) {
+    await logSpending({
+      userId: auth.user.id,
+      runId: parsed.data.run_id,
+      service: parsed.data.asset_type === "image" ? "fal" : "seedance",
+      costCents,
+    });
+  }
+
   return NextResponse.json({
     queued: true,
+    asset_id: row?.id,
+    public_url: publicUrl,
     run_id: parsed.data.run_id,
     asset_type: parsed.data.asset_type,
-    message:
-      "Asset generation queue is ready; provider keys are required before paid calls run.",
+    message: publicUrl
+      ? "Asset generated."
+      : providerError ??
+        (parsed.data.asset_type === "video"
+          ? "Video generation pending Seedance wiring."
+          : "Image queued; add FAL_KEY for live generation."),
   });
 }

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { verifyCronSecret } from "@/lib/api/cron-auth";
-import { dailyBossSummaryTemplate } from "@/lib/email/templates";
 import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
+import { dailyBossSummaryTemplate } from "@/lib/email/templates";
 import { env } from "@/lib/env";
+import { sendEmail } from "@/lib/services/resend";
 
 export async function GET(req: Request) {
   if (!verifyCronSecret(req)) {
@@ -39,9 +40,6 @@ export async function GET(req: Request) {
     warnings.push("Supabase service role not configured.");
   }
 
-  if (!env.RESEND_API_KEY) {
-    warnings.push("Resend key not configured — email not sent.");
-  }
   if (!env.BOSS_EMAIL) {
     warnings.push("BOSS_EMAIL not set.");
   }
@@ -52,14 +50,30 @@ export async function GET(req: Request) {
     warnings,
   });
 
+  let sent = false;
+  let sendError: string | undefined;
+
+  if (env.BOSS_EMAIL) {
+    const result = await sendEmail({
+      to: env.BOSS_EMAIL,
+      subject: email.subject,
+      html: email.html,
+    });
+    sent = result.sent;
+    if (!result.sent) {
+      sendError = result.error ?? "Send failed";
+      warnings.push(sendError);
+    }
+  } else {
+    warnings.push("BOSS_EMAIL missing — email not sent.");
+  }
+
   return NextResponse.json({
     ok: true,
     to: env.BOSS_EMAIL,
     subject: email.subject,
-    html: email.html,
-    sent: false,
-    preview: env.RESEND_API_KEY
-      ? "Wire Resend send when ready."
-      : "Preview only until RESEND_API_KEY is set.",
+    sent,
+    sendError,
+    preview: !sent ? email.html.slice(0, 500) : undefined,
   });
 }
