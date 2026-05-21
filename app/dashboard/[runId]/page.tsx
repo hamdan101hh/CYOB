@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-
 import { RefreshTrendsButton } from "@/components/dashboard/refresh-trends-button";
 import { TierLock } from "@/components/run/tier-lock";
-import { getRunBundle } from "@/lib/data/get-run";
+import { requireRunBundle } from "@/lib/data/require-run";
 import { parseRunDisplay } from "@/lib/data/parse-run-display";
 import { listAgentTiles } from "@/lib/orchestrator/agent-metadata";
 
@@ -13,8 +11,7 @@ export default async function DashboardRunPage({
   params: Promise<{ runId: string }>;
 }) {
   const { runId } = await params;
-  const bundle = await getRunBundle(runId);
-  if (!bundle) notFound();
+  const bundle = await requireRunBundle(runId, `/dashboard/${runId}`);
 
   const tiles = listAgentTiles(bundle.current_agent, bundle.status);
   const locked = bundle.tier === "free";
@@ -49,9 +46,12 @@ export default async function DashboardRunPage({
             Open library
           </Link>
           {locked ? (
-            <span className="rounded-[var(--radius-md)] border border-[var(--gold)]/40 bg-[color-mix(in_oklab,var(--gold)_12%,transparent)] px-4 py-2 text-sm text-[var(--gold)]">
+            <Link
+              href="/pricing"
+              className="rounded-[var(--radius-md)] border border-[var(--gold)]/40 bg-[color-mix(in_oklab,var(--gold)_12%,transparent)] px-4 py-2 text-sm text-[var(--gold)]"
+            >
               Upgrade
-            </span>
+            </Link>
           ) : null}
         </div>
       </div>
@@ -89,7 +89,9 @@ export default async function DashboardRunPage({
               {display.trends.map((t) => (
                 <li key={t.name} className="text-sm text-[var(--text-2)]">
                   <span className="text-[var(--text)]">{t.name}</span>
-                  <span className="ml-2 text-[var(--amber)]">{t.heat}</span>
+                  <span className="ml-2 text-[var(--amber)]">
+                    {typeof t.heat === "number" ? `${t.heat}/100` : t.heat}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -129,10 +131,10 @@ export default async function DashboardRunPage({
           Latest agent memos
         </h2>
         <div className="space-y-3">
-          {[1, 2, 3, 4, 5].map((n) => {
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
             const out = bundle.outputs[n];
             return (
-              <TierLock key={n} locked={locked && n > 1}>
+              <TierLock key={n} locked={locked && n > 1} preview={locked && n === 1}>
                 <article className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-2)] p-5">
                   <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
                     Agent {String(n).padStart(2, "0")}

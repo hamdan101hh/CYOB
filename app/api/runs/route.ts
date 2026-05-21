@@ -1,5 +1,6 @@
 import { after, NextResponse } from "next/server";
 
+import { clientIp, rateLimit } from "@/lib/api/rate-limit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { demoRunCreate } from "@/lib/demo-run-store";
 import { executeRunPipeline } from "@/lib/orchestrator/run-pipeline";
@@ -7,6 +8,15 @@ import { createRunSchema } from "@/lib/schemas/intake";
 import type { IntakePayload } from "@/lib/schemas/intake";
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limited = rateLimit(`runs:${ip}`, 8, 60 * 60 * 1000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many run requests. Try again later." },
+      { status: 429, headers: { "Retry-After": String(limited.retryAfterSec) } },
+    );
+  }
+
   const json: unknown = await req.json();
   const parsed = createRunSchema.safeParse(json);
   if (!parsed.success) {

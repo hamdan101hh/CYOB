@@ -17,6 +17,7 @@ export async function GET(
       status: demo.status,
       current_agent: demo.current_agent,
       agent_status: demo.agent_status,
+      error_message: demo.error_message,
     });
   }
 

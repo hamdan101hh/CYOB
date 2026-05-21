@@ -32,6 +32,12 @@ export type HorizonItem = {
   confidence?: number;
 };
 
+export type CampaignItem = {
+  name: string;
+  type?: string;
+  big_idea?: string;
+};
+
 export function parseRunDisplay(bundle: RunBundle) {
   const t2 = bundle.outputs[2]?.output_json as {
     trends?: TrendItem[];
@@ -50,6 +56,9 @@ export function parseRunDisplay(bundle: RunBundle) {
   const t8 = bundle.outputs[8]?.output_json as {
     horizons?: HorizonItem[];
   } | null;
+  const t7 = bundle.outputs[7]?.output_json as {
+    campaigns?: CampaignItem[];
+  } | null;
   const t9 = bundle.outputs[9]?.output_json as {
     one_page?: string;
     insights?: string[];
@@ -62,6 +71,7 @@ export function parseRunDisplay(bundle: RunBundle) {
     priorities: (t6?.priorities ?? []).slice(0, 5),
     northStar: t6?.north_star ?? null,
     horizons: (t8?.horizons ?? []).slice(0, 3),
+    campaigns: (t7?.campaigns ?? []).slice(0, 4),
     memo: t9?.one_page ?? bundle.outputs[9]?.output_text ?? null,
     insights: t9?.insights ?? [],
   };

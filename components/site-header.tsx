@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { logoutAction } from "@/app/actions/logout";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const nav = [
@@ -51,7 +52,7 @@ export async function SiteHeader() {
               <span className="hidden max-w-[12rem] truncate text-xs text-[var(--text-3)] sm:inline">
                 {user.email}
               </span>
-              <form action="/api/auth/logout" method="post">
+              <form action={logoutAction}>
                 <button
                   type="submit"
                   className="inline-flex h-10 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-medium text-[var(--text-2)] transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-px hover:border-[var(--border-2)] hover:text-[var(--text)]"

@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-
 import { TierLock } from "@/components/run/tier-lock";
-import { getRunBundle } from "@/lib/data/get-run";
+import { requireRunBundle } from "@/lib/data/require-run";
+import { parseRunDisplay } from "@/lib/data/parse-run-display";
 
 export default async function LibraryRunPage({
   params,
@@ -10,11 +9,14 @@ export default async function LibraryRunPage({
   params: Promise<{ runId: string }>;
 }) {
   const { runId } = await params;
-  const bundle = await getRunBundle(runId);
-  if (!bundle) notFound();
+  const bundle = await requireRunBundle(runId, `/library/${runId}`);
 
   const locked = bundle.tier === "free";
-  const creative = bundle.outputs[7]?.output_text;
+  const display = parseRunDisplay(bundle);
+  const campaigns =
+    display.campaigns.length > 0
+      ? display.campaigns
+      : [{ name: "Campaign 1", big_idea: bundle.outputs[7]?.output_text }];
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-14 md:px-10">
@@ -34,31 +36,34 @@ export default async function LibraryRunPage({
       </div>
 
       <div className="mt-10 grid gap-4 md:grid-cols-2">
-        {[1, 2, 3, 4].map((i) => (
-          <TierLock key={i} locked={locked && i > 1}>
-            <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
-              <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-                Campaign {i}
-              </p>
-              <p className="mt-3 text-sm text-[var(--text-2)]">
-                {creative ??
-                  "DALL-E frames and Seedance previews render here after Agent 07."}
-              </p>
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <PreviewTile
-                  title="Hero frame"
-                  campaign={i}
-                  accent="var(--gold)"
-                />
-                <PreviewTile
-                  title="Video preview"
-                  campaign={i}
-                  accent="var(--blue)"
-                />
+        {campaigns.map((campaign, i) => {
+          const index = i + 1;
+          return (
+            <TierLock key={campaign.name} locked={locked && index > 1} preview={locked && index === 1}>
+              <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
+                <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
+                  {campaign.type ?? "Campaign"} · {campaign.name}
+                </p>
+                <p className="mt-3 text-sm text-[var(--text-2)]">
+                  {campaign.big_idea ??
+                    "DALL-E frames and Seedance previews render here after Agent 07."}
+                </p>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <PreviewTile
+                    title="Hero frame"
+                    campaign={index}
+                    accent="var(--gold)"
+                  />
+                  <PreviewTile
+                    title="Video preview"
+                    campaign={index}
+                    accent="var(--blue)"
+                  />
+                </div>
               </div>
-            </div>
-          </TierLock>
-        ))}
+            </TierLock>
+          );
+        })}
       </div>
     </div>
   );

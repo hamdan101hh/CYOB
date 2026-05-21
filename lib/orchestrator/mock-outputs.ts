@@ -156,6 +156,21 @@ export function buildMockOutputs(intake: Pick<
             type: "Brand film",
             big_idea: "Show the craft behind every claim",
           },
+          {
+            name: "Founder Frequency",
+            type: "Short video series",
+            big_idea: "Weekly POV that humanizes premium claims",
+          },
+          {
+            name: "Quiet Compare",
+            type: "Performance",
+            big_idea: "Win consideration with side-by-side proof",
+          },
+          {
+            name: "Regional Pulse",
+            type: "Culture drop",
+            big_idea: `${geography}-first stories that feel local`,
+          },
         ],
       },
     },

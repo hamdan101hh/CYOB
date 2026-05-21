@@ -1,3 +1,4 @@
+import { buildAgentPrompt } from "@/lib/agents/build-prompt";
 import { AGENT_DEFINITIONS } from "@/lib/orchestrator/agent-metadata";
 import {
   buildMockOutputs,
@@ -9,6 +10,7 @@ export async function runAgent(
   agentNumber: number,
   ctx: AgentContext,
 ): Promise<AgentOutputPiece> {
+  const prompt = buildAgentPrompt(agentNumber, ctx);
   const mock = buildMockOutputs({
     company: ctx.intake.company,
     industry: ctx.intake.industry,
@@ -26,16 +28,23 @@ export async function runAgent(
     };
   }
 
+  const output_json = {
+    ...base.output_json,
+    prompt_version: prompt.version,
+    prompt_agent: prompt.agent,
+    prompt_preview: prompt.user.slice(0, 400),
+  };
+
   if (process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY) {
     return {
       ...base,
       output_json: {
-        ...base.output_json,
+        ...output_json,
         live_models_pending: true,
         note: "API keys detected — wire model calls in lib/services next.",
       },
     };
   }
 
-  return base;
+  return { ...base, output_json };
 }

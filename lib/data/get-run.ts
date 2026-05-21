@@ -147,7 +147,7 @@ export async function getRunStatusFromDb(runId: string) {
   if (!user) return null;
   const { data: run } = await sb
     .from("runs")
-    .select("id,status,current_agent,agent_status,user_id")
+    .select("id,status,current_agent,agent_status,error_message,user_id")
     .eq("id", runId)
     .maybeSingle();
   if (!run || run.user_id !== user.id) return null;
@@ -157,5 +157,6 @@ export async function getRunStatusFromDb(runId: string) {
     status: run.status as string,
     current_agent: run.current_agent as number,
     agent_status: run.agent_status as string | null,
+    error_message: run.error_message as string | null,
   };
 }

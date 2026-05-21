@@ -1,14 +1,28 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-/**
- * Keep middleware Edge-safe: importing `@supabase/ssr` here has caused
- * "self is not defined" / broken `.next` caches for some Windows + Next 15 setups.
- * Session refresh still works via `lib/supabase/server.ts` on server routes.
- * Re-enable Supabase in middleware when you want cookie refresh on every navigation
- * (see `lib/supabase/middleware.ts` + Supabase Next.js docs).
- */
-export function middleware(_request: NextRequest) {
-  return NextResponse.next();
+import { updateSession } from "@/lib/supabase/middleware";
+
+const PROTECTED_PREFIXES = ["/dashboard", "/plan", "/library", "/admin"];
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (
+    PROTECTED_PREFIXES.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    )
+  ) {
+    const hasAuthCookie = request.cookies
+      .getAll()
+      .some((c) => c.name.startsWith("sb-") && c.name.includes("auth"));
+    if (!hasAuthCookie && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      const login = new URL("/login", request.url);
+      login.searchParams.set("next", pathname);
+      return NextResponse.redirect(login);
+    }
+  }
+
+  return updateSession(request);
 }
 
 export const config = {

@@ -15,6 +15,7 @@ import {
   VIBE_OPTIONS,
 } from "@/lib/constants/intake-options";
 import { intakeSchema, type IntakePayload } from "@/lib/schemas/intake";
+import { bootstrapAdminIfListed } from "@/lib/auth/bootstrap-admin";
 import {
   createSupabaseBrowserClient,
   isSupabaseBrowserConfigured,
@@ -31,6 +32,8 @@ const STEP_FIELDS: (keyof IntakePayload)[][] = [
   ["email"],
   ["otp"],
 ];
+
+const DRAFT_KEY = "cyob-intake-draft";
 
 const STEP_LABELS = [
   "Company",
@@ -78,7 +81,31 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
       setStep(0);
       setFormError(null);
       form.reset();
+      return;
     }
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<IntakePayload>;
+        form.reset({ ...form.getValues(), ...parsed, otp: "" });
+      }
+    } catch {
+      /* ignore corrupt draft */
+    }
+  }, [open, form]);
+
+  useEffect(() => {
+    if (!open) return;
+    const sub = form.watch((values) => {
+      const { otp: _discardOtp, ...draft } = values;
+      void _discardOtp;
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      } catch {
+        /* storage full */
+      }
+    });
+    return () => sub.unsubscribe();
   }, [open, form]);
 
   useEffect(() => {
@@ -186,6 +213,12 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
       setBusy(false);
       return;
     }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user?.email) {
+      await bootstrapAdminIfListed(user.id, user.email);
+    }
     const res = await fetch("/api/runs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -198,9 +231,16 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
       return;
     }
     const data = (await res.json()) as { runId: string };
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
     onClose();
     router.push(`/preparing/${data.runId}`);
   };
+
+  const progressPct = Math.round(((step + 1) / STEP_FIELDS.length) * 100);
 
   const ChipRow = (
     field: keyof IntakePayload,
@@ -252,6 +292,16 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
           >
             <X className="h-4 w-4" />
           </button>
+        </div>
+
+        <div
+          className="mt-4 h-1 overflow-hidden rounded-full bg-[var(--bg-2)]"
+          aria-hidden
+        >
+          <div
+            className="h-full bg-[var(--gold)] transition-all duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
         </div>
 
         <div className="mt-6 space-y-4">

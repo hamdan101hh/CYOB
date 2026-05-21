@@ -12,6 +12,7 @@ type StatusPayload = {
   status: string;
   current_agent: number;
   agent_status: string | null;
+  error_message?: string | null;
 };
 
 export function PreparingClient({ runId }: { runId: string }) {
@@ -41,7 +42,9 @@ export function PreparingClient({ runId }: { runId: string }) {
           router.replace(`/dashboard/${runId}`);
         } else if (body.status === "failed") {
           setError(
-            body.agent_status ?? "This run failed. Try starting a new intake.",
+            body.error_message ??
+              body.agent_status ??
+              "This run failed. Try starting a new intake.",
           );
         }
       } catch {

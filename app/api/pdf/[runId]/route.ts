@@ -12,10 +12,13 @@ export async function GET(
     return NextResponse.json({ error: "Run not found" }, { status: 404 });
   }
 
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+
   return NextResponse.json({
     run_id: runId,
     company: bundle.intake.company,
     pdf_ready: false,
-    message: "Puppeteer PDF rendering is scaffolded for provider setup; use /plan for print preview meanwhile.",
+    print_url: appUrl ? `${appUrl}/plan/${runId}?print=1` : `/plan/${runId}?print=1`,
+    message: "Use print_url for browser print-to-PDF until Puppeteer is wired.",
   });
 }

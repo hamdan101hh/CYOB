@@ -1,11 +1,20 @@
 import Link from "next/link";
 
-type RunRow = {
-  id: string;
-  status: string;
-  created_at: string;
-  agent_status: string | null;
-};
+import type { UserRunRow } from "@/lib/data/list-user-runs";
+
+function statusLabel(status: string) {
+  if (status === "complete") return "Complete";
+  if (status === "failed") return "Failed";
+  if (status === "running") return "Running";
+  return "Queued";
+}
+
+function statusClass(status: string) {
+  if (status === "complete") return "text-[var(--green)]";
+  if (status === "failed") return "text-[var(--red)]";
+  if (status === "running") return "text-[var(--gold)]";
+  return "text-[var(--text-3)]";
+}
 
 export function RunsHub({
   title,
@@ -15,7 +24,7 @@ export function RunsHub({
 }: {
   title: string;
   description: string;
-  runs: RunRow[];
+  runs: UserRunRow[];
   linkPrefix: "dashboard" | "plan" | "library";
 }) {
   const href = (id: string) => `/${linkPrefix}/${id}`;
@@ -48,15 +57,16 @@ export function RunsHub({
                 href={href(run.id)}
                 className="flex flex-col gap-1 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-5 py-4 transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:border-[var(--border-2)]"
               >
-                <span className="text-sm font-medium text-[var(--text)]">
-                  {run.status === "complete"
-                    ? "Complete"
-                    : run.status === "failed"
-                      ? "Failed"
-                      : run.status === "running"
-                        ? "Running"
-                        : "Queued"}
-                </span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-[var(--text)]">
+                    {run.company ?? "Untitled run"}
+                  </span>
+                  <span
+                    className={`text-xs font-medium uppercase tracking-wide ${statusClass(run.status)}`}
+                  >
+                    {statusLabel(run.status)}
+                  </span>
+                </div>
                 <span className="text-xs text-[var(--text-3)]">
                   {new Date(run.created_at).toLocaleString()}
                   {run.agent_status ? ` · ${run.agent_status}` : ""}

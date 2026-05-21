@@ -15,6 +15,19 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "https://cyob.site",
   ),
+  openGraph: {
+    title: "cyob — strategic intelligence",
+    description:
+      "Ten specialist agents. One war room for industry intelligence and company strategy.",
+    siteName: "cyob",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "cyob — strategic intelligence",
+    description:
+      "Ten specialist agents. One war room for industry intelligence and company strategy.",
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

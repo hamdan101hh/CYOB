@@ -67,3 +67,27 @@ h4 {
   outline: 2px solid color-mix(in oklab, var(--gold) 70%, white);
   outline-offset: 2px;
 }
+
+@media print {
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  .print-plan {
+    padding: 0;
+    max-width: none;
+  }
+
+  .print-plan section {
+    break-inside: avoid;
+    border-color: #ddd;
+    background: #fff;
+    color: #111;
+  }
+}
