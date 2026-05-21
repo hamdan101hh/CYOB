@@ -1,63 +1,46 @@
-# cyob — Hamdan batch checklist (do when back)
+# cyob — Hamdan batch checklist
 
-## Agent work complete (code-only)
+## Live
 
-| Phase | Status |
-|-------|--------|
-| 0 Setup | Done locally |
-| 1 Auth + intake | UI + demo flow |
-| 2 Bot engine | Orchestrator + agent routes + rich demo JSON |
-| 3 Dashboard/plan/library | Parsed trends/gaps/competitors + refresh button |
-| 4 Pricing | Toggle UI + checkout/webhook shells + price env names |
-| 5 Admin | Shell + service-tier API (`is_admin` required) |
-| 6 Cron | Routes + `CRON_SECRET` guard + `vercel.json` schedules |
-| 7 Launch | **Your batch** (below) |
+- **Site:** https://cyob.site (Next.js app)
+- **Vercel:** `cyob-k28y` — env vars + Next.js framework configured
+- **Branch:** `production`
 
-Also added: Supabase magic-link callback, logout route, waitlist, enterprise inquiry, asset/PDF stubs, daily boss summary stub, PR/security docs.
+## Your batch later (~5 min)
 
-**While you were away:** `vercel.json` pins Next.js; legacy HTML moved to `prototype/` so Vercel no longer serves the old static site at `/`. See **`docs/VERCEL_5MIN.md`** for the full 5-minute Vercel + Supabase batch.
-
-Real Claude/OpenAI/Apify/Stripe/Resend/PDF run only after keys in `.env.local` and provider setup.
-
----
-
-## Your batch (~5 min if code is pushed)
-
-**Start here:** [`docs/VERCEL_5MIN.md`](docs/VERCEL_5MIN.md)
-
-Quick checklist:
-
-1. **Push** `production` (if not already) → Vercel redeploys
-2. **Vercel** `cyob-k28y`: Framework **Next.js**, Node **20.x**, `NEXT_PUBLIC_APP_URL=https://cyob.site`, redeploy
-3. **Supabase** redirect URLs for `cyob.site`, `www`, `cyob-k28y.vercel.app`, localhost
-4. **Test** `https://cyob.site/login` (must be **200**, not 404)
-
-### Local dev (optional)
-
-```powershell
-cd C:\Users\Desktop\cyob
-git pull
-npm.cmd install
-npm.cmd run dev
-```
-
-### Supabase redirect URLs
+**Supabase only** (deferred): sign in with the account that owns project `uxwrbupzrhrdktmrxyat`, then **Authentication → URL Configuration**:
 
 ```text
-http://localhost:3000/auth/callback
+Site URL: https://cyob.site
+
+Redirect URLs:
 https://cyob.site/auth/callback
 https://www.cyob.site/auth/callback
 https://cyob-k28y.vercel.app/auth/callback
+http://localhost:3000/auth/callback
 ```
 
-Site URL: `https://cyob.site`
+Then test magic link at https://cyob.site/login
 
-### Security
+**Security (before public launch):** rotate Supabase `service_role` key.
 
-Rotate **Supabase service_role** before public launch (may have appeared in prior tooling output).
-
-**Boss email:** `BOSS_EMAIL=hamdaaninh101@gmail.com` (digests after Resend).
+**Optional:** revoke Vercel token `cyob-deploy-agent` if still active.
 
 ---
 
-Reply **"ready for handoff"** and we walk through live.
+## Agent work (code — latest)
+
+| Area | Done |
+|------|------|
+| API security | Run/asset routes require auth + run ownership; agents admin-only in prod |
+| Stripe webhook | Fails closed (501) until signature verify is wired |
+| Cap plumbing | Pipeline checks cap; spending log hooks on agents |
+| Dashboard/plan/library | List user runs (no more “Phase 3” placeholders) |
+| Home + header | Prod copy; session email + logout |
+| Auth | Callback errors; `ADMIN_EMAILS` auto-promotes admin on login |
+| Pricing | Waitlist + enterprise forms wired to APIs |
+| Errors | `error.tsx`, `not-found.tsx`, pipeline `failed` status |
+
+Still needs **paid API keys** (Anthropic, Stripe, Resend, etc.) when approved — no spend without OK.
+
+Docs: `docs/VERCEL_5MIN.md`, `docs/ONE_COMMAND_DEPLOY.md`

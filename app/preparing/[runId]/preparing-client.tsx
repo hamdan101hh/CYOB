@@ -39,6 +39,10 @@ export function PreparingClient({ runId }: { runId: string }) {
         setStatus(body);
         if (body.status === "complete") {
           router.replace(`/dashboard/${runId}`);
+        } else if (body.status === "failed") {
+          setError(
+            body.agent_status ?? "This run failed. Try starting a new intake.",
+          );
         }
       } catch {
         if (!cancelled) setError("Network error while polling.");

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { requireAdmin } from "@/lib/auth/admin";
 import { runAgent } from "@/lib/agents/run-agent";
+import { isMonthlyCapExceeded } from "@/lib/services/cap";
 import { AGENT_DEFINITIONS } from "@/lib/orchestrator/agent-metadata";
 
 export async function GET(
@@ -38,6 +40,23 @@ export async function POST(
   const hit = AGENT_DEFINITIONS.find((a) => a.name === name);
   if (!hit) {
     return NextResponse.json({ error: "Unknown agent" }, { status: 404 });
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    const admin = await requireAdmin();
+    if (!admin.ok) {
+      return NextResponse.json(
+        { error: "Agent API is admin-only in production" },
+        { status: admin.status },
+      );
+    }
+  }
+
+  if (await isMonthlyCapExceeded()) {
+    return NextResponse.json(
+      { error: "Monthly API cap reached", code: "cap_hit" },
+      { status: 429 },
+    );
   }
 
   const parsed = postSchema.safeParse(await req.json());

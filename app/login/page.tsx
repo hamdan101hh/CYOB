@@ -1,3 +1,6 @@
+import { Suspense } from "react";
+
+import { LoginAuthNotice } from "@/components/login/login-auth-notice";
 import { LoginForm } from "@/components/login/login-form";
 
 export default function LoginPage() {
@@ -10,6 +13,9 @@ export default function LoginPage() {
       <p className="mt-3 text-[var(--text-2)]">
         Sign in to access saved runs and paid tiers.
       </p>
+      <Suspense fallback={null}>
+        <LoginAuthNotice />
+      </Suspense>
       <LoginForm />
     </div>
   );

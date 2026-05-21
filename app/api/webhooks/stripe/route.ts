@@ -16,9 +16,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing signature" }, { status: 400 });
   }
 
-  // Stripe SDK verify + subscription handlers wire when STRIPE_SECRET_KEY is set.
   const body = await req.text();
   void body;
 
-  return NextResponse.json({ received: true });
+  // Fail closed until Stripe SDK signature verification is wired.
+  return NextResponse.json(
+    {
+      error:
+        "Stripe webhook verification not implemented yet. Do not point Stripe at this URL until the SDK handler is added.",
+    },
+    { status: 501 },
+  );
 }

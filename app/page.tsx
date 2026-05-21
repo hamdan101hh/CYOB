@@ -18,9 +18,24 @@ export default function HomePage() {
           strategy.
         </h1>
         <p className="max-w-2xl text-pretty text-lg text-[var(--text-2)] md:text-xl">
-          Ten specialist agents. One war room. Use{" "}
-          <span className="text-[var(--text)]">Skip login (local demo)</span> on
-          the email step to run the full flow without Supabase.
+          Ten specialist agents. One war room.{" "}
+          {process.env.NODE_ENV === "development" ? (
+            <>
+              Use{" "}
+              <span className="text-[var(--text)]">Skip login (local demo)</span>{" "}
+              on the email step to run the full flow without Supabase.
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-[var(--gold)] underline-offset-4 hover:underline"
+              >
+                Sign in
+              </Link>{" "}
+              to save runs, then start the intake.
+            </>
+          )}
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <IntakeCta />

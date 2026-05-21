@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { requireUser, verifyRunOwnership } from "@/lib/auth/session";
 import { isMonthlyCapExceeded } from "@/lib/services/cap";
 
 const schema = z.object({
@@ -20,10 +21,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid asset request" }, { status: 400 });
   }
 
+  const auth = await requireUser();
+  if (!auth.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: auth.status });
+  }
+
+  const access = await verifyRunOwnership(parsed.data.run_id, auth.user.id);
+  if (!access.ok) {
+    return NextResponse.json({ error: "Not found" }, { status: access.status });
+  }
+
   return NextResponse.json({
     queued: true,
     run_id: parsed.data.run_id,
     asset_type: parsed.data.asset_type,
-    message: "Asset generation queue is ready; provider keys are required before paid calls run.",
+    message:
+      "Asset generation queue is ready; provider keys are required before paid calls run.",
   });
 }
