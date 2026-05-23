@@ -109,7 +109,7 @@ const codeOnly = (title) =>
 <p>Your sign-in code:</p>
 <p style="font-size:32px;font-weight:700;letter-spacing:0.2em;margin:24px 0">{{ .Token }}</p>
 <p>Open ${APP_URL}/login in the same browser, enter your email, then paste this code.</p>
-<p>This code expires in 3 minutes. Do not share it.</p>`;
+<p>This code expires in 10 minutes. Do not share it.</p>`;
 
 console.log("▶ Auth URLs + OTP email (code only, 6 digits, 3 min expiry)…");
 await mgmt(`/v1/projects/${SUPABASE_REF}/config/auth`, {
@@ -118,7 +118,7 @@ await mgmt(`/v1/projects/${SUPABASE_REF}/config/auth`, {
     site_url: APP_URL,
     uri_allow_list: redirects,
     mailer_otp_length: 6,
-    mailer_otp_exp: 180,
+    mailer_otp_exp: 600,
     mailer_subjects_magic_link: "Your cyob sign-in code",
     mailer_templates_magic_link_content: codeOnly("Your cyob sign-in code"),
     mailer_subjects_confirmation: "Your cyob sign-in code",

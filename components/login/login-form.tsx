@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import {
   isValidOtpLength,
   normalizeOtpInput,
-  verifyEmailOtp,
 } from "@/lib/auth/verify-email-otp";
 import {
   createSupabaseBrowserClient,
@@ -62,8 +61,7 @@ export function LoginForm() {
 
   const verify = async () => {
     setError(null);
-    const supabase = createSupabaseBrowserClient();
-    if (!supabase) return;
+    if (!isSupabaseBrowserConfigured()) return;
 
     const token = normalizeOtpInput(otp);
     if (!isValidOtpLength(token)) {
@@ -72,16 +70,24 @@ export function LoginForm() {
     }
 
     setBusy(true);
-    const result = await verifyEmailOtp(supabase, email.trim(), token);
-    setBusy(false);
-
-    if (!result.ok) {
-      setError(friendlyAuthError(result.message));
-      return;
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), token }),
+      });
+      const body = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setError(friendlyAuthError(body.error ?? "Verification failed"));
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Network error. Try again.");
+    } finally {
+      setBusy(false);
     }
-
-    router.push("/");
-    router.refresh();
   };
 
   const onSubmit = (e: FormEvent) => {

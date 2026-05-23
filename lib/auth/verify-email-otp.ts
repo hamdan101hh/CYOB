@@ -22,7 +22,7 @@ export async function verifyEmailOtp(
     };
   }
 
-  const types = ["email", "signup"] as const;
+  const types = ["email", "signup", "recovery", "magiclink"] as const;
   let lastMessage = "Code expired or invalid. Request a new code.";
 
   for (const type of types) {
