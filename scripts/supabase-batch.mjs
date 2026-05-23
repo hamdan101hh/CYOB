@@ -7,7 +7,7 @@
  *   node scripts/supabase-batch.mjs
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,7 +16,30 @@ const ROOT = resolve(__dirname, "..");
 const SUPABASE_REF = "uxwrbupzrhrdktmrxyat";
 const APP_URL = "https://cyob.site";
 
-const token = process.env.SUPABASE_ACCESS_TOKEN?.trim();
+function parseEnvFile(path) {
+  if (!existsSync(path)) return {};
+  const out = {};
+  for (const line of readFileSync(path, "utf8").split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t || t.startsWith("#")) continue;
+    const i = t.indexOf("=");
+    if (i === -1) continue;
+    let val = t.slice(i + 1).trim();
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    out[t.slice(0, i).trim()] = val;
+  }
+  return out;
+}
+
+const local = parseEnvFile(resolve(ROOT, ".env.local"));
+const token = (
+  process.env.SUPABASE_ACCESS_TOKEN ?? local.SUPABASE_ACCESS_TOKEN
+)?.trim();
 if (!token) {
   console.error(
     "\nSet SUPABASE_ACCESS_TOKEN (https://supabase.com/dashboard/account/tokens)\n",
