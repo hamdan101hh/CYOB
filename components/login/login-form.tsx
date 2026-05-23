@@ -5,9 +5,29 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import {
+  isValidOtpLength,
+  normalizeOtpInput,
+  verifyEmailOtp,
+} from "@/lib/auth/verify-email-otp";
+import {
   createSupabaseBrowserClient,
   isSupabaseBrowserConfigured,
 } from "@/lib/supabase/client";
+
+function friendlyAuthError(message: string): string {
+  const lower = message.toLowerCase();
+  if (
+    lower.includes("rate limit") ||
+    lower.includes("over_email") ||
+    lower.includes("429")
+  ) {
+    return "Too many login emails sent. Wait about 1 hour, then try again once.";
+  }
+  if (lower.includes("expired") || lower.includes("invalid")) {
+    return "Code expired or wrong. Click “Send new code” and paste the latest email code (same tab).";
+  }
+  return message;
+}
 
 export function LoginForm() {
   const router = useRouter();
@@ -26,17 +46,17 @@ export function LoginForm() {
     }
     setBusy(true);
     const { error: err } = await supabase.auth.signInWithOtp({
-      email,
+      email: email.trim(),
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     setBusy(false);
     if (err) {
-      setError(err.message);
+      setError(friendlyAuthError(err.message));
       return;
     }
+    setOtp("");
     setStep("otp");
   };
 
@@ -44,21 +64,22 @@ export function LoginForm() {
     setError(null);
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
-    if (otp.trim().length !== 6) {
-      setError("Enter the 6-digit code.");
+
+    const token = normalizeOtpInput(otp);
+    if (!isValidOtpLength(token)) {
+      setError("Paste the full code from your email (6 digits).");
       return;
     }
+
     setBusy(true);
-    const { error: err } = await supabase.auth.verifyOtp({
-      email,
-      token: otp.trim(),
-      type: "email",
-    });
+    const result = await verifyEmailOtp(supabase, email.trim(), token);
     setBusy(false);
-    if (err) {
-      setError(err.message);
+
+    if (!result.ok) {
+      setError(friendlyAuthError(result.message));
       return;
     }
+
     router.push("/");
     router.refresh();
   };
@@ -91,17 +112,26 @@ export function LoginForm() {
           />
         </label>
       ) : (
-        <label className="block space-y-2">
-          <span className="text-sm text-[var(--text-2)]">6-digit code</span>
-          <input
-            inputMode="numeric"
-            maxLength={6}
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm tracking-[0.35em] text-[var(--text)]"
-            required
-          />
-        </label>
+        <>
+          <p className="text-sm text-[var(--text-2)]">
+            Code sent to <span className="text-[var(--text)]">{email}</span>
+          </p>
+          <label className="block space-y-2">
+            <span className="text-sm text-[var(--text-2)]">Sign-in code</span>
+            <input
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={8}
+              value={otp}
+              onChange={(e) =>
+                setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))
+              }
+              placeholder="6-digit code"
+              className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm tracking-[0.35em] text-[var(--text)]"
+              required
+            />
+          </label>
+        </>
       )}
       {error ? (
         <p className="text-sm text-[var(--red)]" role="alert">
@@ -116,19 +146,31 @@ export function LoginForm() {
         {step === "email" ? "Send code" : "Verify & sign in"}
       </button>
       {step === "otp" ? (
-        <p className="text-xs leading-relaxed text-[var(--text-3)]">
-          Supabase may send a magic link instead of a numeric code until the
-          email template is customized. If so, click the link in the email.
-        </p>
-      ) : null}
-      {step === "otp" ? (
-        <button
-          type="button"
-          className="text-sm text-[var(--text-3)] hover:text-[var(--text)]"
-          onClick={() => setStep("email")}
-        >
-          Use a different email
-        </button>
+        <>
+          <p className="text-xs leading-relaxed text-[var(--text-3)]">
+            Stay on this tab. Copy the code from your email and paste it here —
+            ignore any link in older emails.
+          </p>
+          <button
+            type="button"
+            disabled={busy}
+            className="text-sm text-[var(--gold)] underline-offset-4 hover:underline disabled:opacity-50"
+            onClick={() => void sendCode()}
+          >
+            Send new code
+          </button>
+          <button
+            type="button"
+            className="block text-sm text-[var(--text-3)] hover:text-[var(--text)]"
+            onClick={() => {
+              setStep("email");
+              setOtp("");
+              setError(null);
+            }}
+          >
+            Use a different email
+          </button>
+        </>
       ) : null}
       <Link
         href="/"

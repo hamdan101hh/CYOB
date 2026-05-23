@@ -6,11 +6,13 @@
 - **Vercel:** `cyob-k28y` — env vars + Next.js configured
 - **Branch:** `production`
 
-## Your batch later (~5 min)
+## Your batch (~5 min)
 
-**Supabase dashboard only:**
+**Fast path:** `node scripts/supabase-batch.mjs` (needs `SUPABASE_ACCESS_TOKEN`) — see `docs/CONTINUE_BATCH.md`
 
-1. Apply migration `supabase/migrations/000002_runs_created_at_and_policies.sql` (SQL editor or CLI)
+**Or Supabase dashboard:**
+
+1. Apply migration `supabase/migrations/000002_runs_created_at_and_policies.sql` (SQL editor or script)
 2. **Authentication → URL Configuration** — Site URL + redirect URLs (see below)
 3. Test magic link at https://cyob.site/login
 
@@ -45,6 +47,6 @@ http://localhost:3000/auth/callback
 | Print | `/plan/[runId]?print=1` print stylesheet |
 | Migration | `000002` — `runs.created_at`, trend refresh RLS, waitlist dedupe |
 
-Still needs **paid keys** when approved: Stripe checkout, Resend send, Claude/OpenAI live calls, FAL/Apify assets.
+**Paid integrations wired in code** (`c3e03e0`): Stripe Checkout + webhook, Resend boss email, Claude/OpenAI agents, FAL images, Apify scrape (studio+). They activate when Vercel env keys are set; mocks remain as fallback.
 
 Docs: `docs/VERCEL_5MIN.md`, `docs/ONE_COMMAND_DEPLOY.md`

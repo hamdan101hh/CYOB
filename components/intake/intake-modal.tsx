@@ -185,9 +185,9 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
   const submitLive = async () => {
     setBusy(true);
     setFormError(null);
-    const otpToken = (form.getValues("otp") ?? "").trim();
-    if (otpToken.length !== 6) {
-      setFormError("Enter the 6-digit code.");
+    const otpToken = (form.getValues("otp") ?? "").replace(/\D/g, "").trim();
+    if (otpToken.length < 6 || otpToken.length > 8) {
+      setFormError("Enter the full code from your email.");
       setBusy(false);
       return;
     }
@@ -203,13 +203,10 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
       return;
     }
     const email = form.getValues("email");
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: otpToken,
-      type: "email",
-    });
-    if (error) {
-      setFormError(error.message);
+    const { verifyEmailOtp } = await import("@/lib/auth/verify-email-otp");
+    const verified = await verifyEmailOtp(supabase, email, otpToken);
+    if (!verified.ok) {
+      setFormError(verified.message);
       setBusy(false);
       return;
     }
