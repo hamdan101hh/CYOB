@@ -18,11 +18,11 @@ export default async function DashboardRunPage({
   const display = parseRunDisplay(bundle);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 px-6 py-14 md:px-10">
+    <div className="page-wrap space-y-10">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm text-[var(--text-3)]">Dashboard</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight text-[var(--text)] md:text-4xl">
+          <p className="eyebrow">Dashboard</p>
+          <h1 className="page-title mt-1 md:text-4xl">
             {bundle.intake.company}
           </h1>
           <p className="mt-2 text-sm text-[var(--text-2)]">
@@ -35,20 +35,20 @@ export default async function DashboardRunPage({
           <RefreshTrendsButton runId={runId} />
           <Link
             href={`/plan/${runId}`}
-            className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--text)] hover:border-[var(--border-2)]"
+            className="btn btn-secondary h-10 px-4"
           >
             Open plan
           </Link>
           <Link
             href={`/library/${runId}`}
-            className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--text)] hover:border-[var(--border-2)]"
+            className="btn btn-secondary h-10 px-4"
           >
             Open library
           </Link>
           {locked ? (
             <Link
               href="/pricing"
-              className="rounded-[var(--radius-md)] border border-[var(--gold)]/40 bg-[color-mix(in_oklab,var(--gold)_12%,transparent)] px-4 py-2 text-sm text-[var(--gold)]"
+              className="btn btn-primary h-10 px-4"
             >
               Upgrade
             </Link>
@@ -68,7 +68,7 @@ export default async function DashboardRunPage({
                 t.state === "done"
                   ? "border-[var(--green)]/30 bg-[color-mix(in_oklab,var(--green)_10%,transparent)] text-[var(--text)]"
                   : t.state === "active"
-                    ? "border-[var(--gold)]/40 bg-[color-mix(in_oklab,var(--gold)_12%,transparent)] text-[var(--text)]"
+                    ? "border-[color-mix(in_oklab,var(--accent)_40%,transparent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--text)]"
                     : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-3)]"
               }`}
             >

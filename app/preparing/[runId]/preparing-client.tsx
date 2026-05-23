@@ -64,12 +64,10 @@ export function PreparingClient({ runId }: { runId: string }) {
     : listAgentTiles(0, "queued");
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16 md:px-10">
-      <p className="text-sm text-[var(--text-3)]">Preparing your war room</p>
-      <h1 className="mt-2 text-3xl font-medium tracking-tight text-[var(--text)] md:text-4xl">
-        Running specialist agents
-      </h1>
-      <p className="mt-3 max-w-2xl text-[var(--text-2)]">
+    <div className="page-wrap max-w-4xl">
+      <p className="eyebrow">Preparing your war room</p>
+      <h1 className="page-title">Running specialist agents</h1>
+      <p className="page-lead">
         {status?.agent_status ??
           "Queued — this page updates automatically while agents execute."}
       </p>
@@ -77,7 +75,7 @@ export function PreparingClient({ runId }: { runId: string }) {
       {error && (
         <p className="mt-6 text-sm text-[var(--red)]" role="alert">
           {error}{" "}
-          <Link href="/" className="text-[var(--gold)] underline">
+          <Link href="/" className="link-accent">
             Back home
           </Link>
         </p>
@@ -91,7 +89,7 @@ export function PreparingClient({ runId }: { runId: string }) {
               t.state === "done"
                 ? "border-[var(--green)]/35 bg-[color-mix(in_oklab,var(--green)_12%,transparent)] text-[var(--text)]"
                 : t.state === "active"
-                  ? "border-[var(--gold)]/50 bg-[color-mix(in_oklab,var(--gold)_14%,transparent)] text-[var(--text)]"
+                  ? "border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--text)]"
                   : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-3)]"
             }`}
           >

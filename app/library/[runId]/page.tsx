@@ -30,7 +30,7 @@ export default async function LibraryRunPage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 md:px-10">
+    <div className="page-wrap">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm text-[var(--text-3)]">Creative library</p>
@@ -40,7 +40,7 @@ export default async function LibraryRunPage({
         </div>
         <Link
           href={`/dashboard/${runId}`}
-          className="text-sm text-[var(--gold)] underline-offset-4 hover:underline"
+          className="link-accent text-sm"
         >
           Back to dashboard
         </Link>

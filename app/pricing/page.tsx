@@ -4,21 +4,14 @@ import { PricingClient } from "@/components/pricing/pricing-client";
 
 export default function PricingPage() {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-16 md:px-10">
-      <div className="max-w-2xl">
-        <p className="text-sm text-[var(--text-3)]">Pricing</p>
-        <h1 className="mt-2 text-4xl font-medium tracking-tight text-[var(--text)] md:text-5xl">
-          Choose your depth
-        </h1>
-        <p className="mt-4 text-lg text-[var(--text-2)]">
-          Annual billing is the default. Sign in to upgrade via Stripe Checkout.
-        </p>
-      </div>
+    <div className="page-wrap">
+      <p className="eyebrow">Pricing</p>
+      <h1 className="page-title">Choose your depth</h1>
+      <p className="page-lead">
+        Annual billing is the default. Sign in to upgrade via Stripe Checkout.
+      </p>
       <PricingClient />
-      <Link
-        href="/"
-        className="mt-10 inline-flex text-sm text-[var(--gold)] underline-offset-4 hover:underline"
-      >
+      <Link href="/" className="link-accent mt-10 inline-flex text-sm">
         Back to home
       </Link>
     </div>

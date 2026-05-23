@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
 const tiers = [
@@ -80,7 +81,7 @@ function CheckoutButton({
         type="button"
         disabled={busy}
         onClick={() => void startCheckout()}
-        className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--gold)]/50 bg-[color-mix(in_oklab,var(--gold)_16%,transparent)] text-sm font-medium text-[var(--text)] disabled:opacity-50"
+        className="btn btn-primary mt-6 w-full"
       >
         {busy ? "Redirecting…" : label}
       </button>
@@ -116,10 +117,10 @@ export function PricingClient() {
           aria-checked={annual}
           aria-label="Toggle annual billing"
           onClick={() => setAnnual(!annual)}
-          className="relative h-7 w-12 rounded-full border border-[var(--border)] bg-[var(--surface)]"
-        >
+            className="relative h-7 w-12 rounded-full border border-[var(--border)] bg-[var(--bg-3)]"
+          >
           <span
-            className={`absolute top-0.5 size-6 rounded-full bg-[var(--gold)] transition-transform ${
+            className={`absolute top-0.5 size-6 rounded-full bg-[var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition-transform ${
               annual ? "left-5" : "left-0.5"
             }`}
           />
@@ -147,7 +148,7 @@ export function PricingClient() {
           return (
             <div
               key={tier.id}
-              className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-1 hover:border-[var(--border-2)]"
+              className="card card-pad transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-1 hover:border-[var(--border-2)]"
             >
               <p className="text-sm text-[var(--text-3)]">{tier.name}</p>
               <p className="mt-3 text-3xl font-medium text-[var(--text)]">
@@ -155,12 +156,9 @@ export function PricingClient() {
               </p>
               <p className="mt-3 text-sm text-[var(--text-2)]">{tier.blurb}</p>
               {tier.id === "free" ? (
-                <a
-                  href="/login"
-                  className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-2)] text-sm font-medium text-[var(--text)]"
-                >
+                <Link href="/login" className="btn btn-secondary mt-6 w-full">
                   Start free
-                </a>
+                </Link>
               ) : (
                 <CheckoutButton
                   priceKey={priceKeyForTier(tier.id, annual)}
@@ -209,7 +207,7 @@ function WaitlistForm() {
   return (
     <form
       onSubmit={(e) => void submit(e)}
-      className="mt-12 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-6"
+      className="card card-pad mt-12"
     >
       <p className="text-sm font-medium text-[var(--text)]">Launch waitlist</p>
       <p className="mt-1 text-sm text-[var(--text-2)]">
@@ -225,12 +223,12 @@ function WaitlistForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="h-11 flex-1 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 text-sm text-[var(--text)]"
+            className="input-field flex-1"
           />
           <button
             type="submit"
             disabled={busy}
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--gold)]/50 bg-[color-mix(in_oklab,var(--gold)_16%,transparent)] px-5 text-sm font-medium text-[var(--text)] disabled:opacity-50"
+            className="btn btn-primary px-5"
           >
             Join waitlist
           </button>
@@ -279,7 +277,7 @@ function EnterpriseInquiryForm() {
   return (
     <form
       onSubmit={(e) => void submit(e)}
-      className="mt-10 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-6"
+      className="card card-pad mt-10"
     >
       <p className="text-sm font-medium text-[var(--text)]">Enterprise</p>
       <p className="mt-1 text-sm text-[var(--text-2)]">
@@ -297,7 +295,7 @@ function EnterpriseInquiryForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Work email"
-            className="h-11 w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 text-sm text-[var(--text)]"
+            className="input-field"
           />
           <input
             type="text"
@@ -305,19 +303,19 @@ function EnterpriseInquiryForm() {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             placeholder="Company"
-            className="h-11 w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 text-sm text-[var(--text)]"
+            className="input-field"
           />
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="What do you need? (optional)"
             rows={3}
-            className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
+            className="input-field min-h-[5.5rem] py-2"
           />
           <button
             type="submit"
             disabled={busy}
-            className="inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-2)] text-sm font-medium text-[var(--text)] disabled:opacity-50 sm:w-auto sm:px-6"
+            className="btn btn-secondary w-full sm:w-auto sm:px-6"
           >
             Contact sales
           </button>

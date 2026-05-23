@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -20,7 +20,7 @@ function friendlyAuthError(message: string): string {
     lower.includes("over_email") ||
     lower.includes("429")
   ) {
-    return "Too many login emails sent. Wait about 1 hour, then try again once.";
+    return "Too many login emails sent. Wait 30–60 minutes, then try once. Check your inbox — an earlier code may still work for 10 minutes.";
   }
   if (lower.includes("expired") || lower.includes("invalid")) {
     return "Code expired or wrong. Click “Send new code” and paste the latest email code (same tab).";
@@ -35,8 +35,16 @@ export function LoginForm() {
   const [step, setStep] = useState<"email" | "otp">("email");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resendSec, setResendSec] = useState(0);
+
+  useEffect(() => {
+    if (resendSec <= 0) return;
+    const t = setTimeout(() => setResendSec((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendSec]);
 
   const sendCode = async () => {
+    if (resendSec > 0) return;
     setError(null);
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
@@ -57,6 +65,7 @@ export function LoginForm() {
     }
     setOtp("");
     setStep("otp");
+    setResendSec(60);
   };
 
   const verify = async () => {
@@ -105,25 +114,28 @@ export function LoginForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={onSubmit}>
+    <form className="card card-pad space-y-5" onSubmit={onSubmit}>
       {step === "email" ? (
         <label className="block space-y-2">
-          <span className="text-sm text-[var(--text-2)]">Email</span>
+          <span className="text-sm font-medium text-[var(--text-2)]">Email</span>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
+            className="input-field"
             required
           />
         </label>
       ) : (
         <>
           <p className="text-sm text-[var(--text-2)]">
-            Code sent to <span className="text-[var(--text)]">{email}</span>
+            Code sent to{" "}
+            <span className="font-medium text-[var(--text)]">{email}</span>
           </p>
           <label className="block space-y-2">
-            <span className="text-sm text-[var(--text-2)]">Sign-in code</span>
+            <span className="text-sm font-medium text-[var(--text-2)]">
+              Sign-in code
+            </span>
             <input
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -133,7 +145,7 @@ export function LoginForm() {
                 setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))
               }
               placeholder="6-digit code"
-              className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm tracking-[0.35em] text-[var(--text)]"
+              className="input-field tracking-[0.35em]"
               required
             />
           </label>
@@ -144,30 +156,25 @@ export function LoginForm() {
           {error}
         </p>
       ) : null}
-      <button
-        type="submit"
-        disabled={busy}
-        className="inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--gold)]/50 bg-[color-mix(in_oklab,var(--gold)_16%,transparent)] text-sm font-medium text-[var(--text)] disabled:opacity-50"
-      >
+      <button type="submit" disabled={busy} className="btn btn-primary w-full">
         {step === "email" ? "Send code" : "Verify & sign in"}
       </button>
       {step === "otp" ? (
         <>
-          <p className="text-xs leading-relaxed text-[var(--text-3)]">
-            Stay on this tab. Copy the code from your email and paste it here —
-            ignore any link in older emails.
+          <p className="text-xs leading-relaxed text-[var(--text-4)]">
+            Stay on this tab. Copy the code from your email and paste it here.
           </p>
           <button
             type="button"
-            disabled={busy}
-            className="text-sm text-[var(--gold)] underline-offset-4 hover:underline disabled:opacity-50"
+            disabled={busy || resendSec > 0}
+            className="link-accent text-sm disabled:opacity-50"
             onClick={() => void sendCode()}
           >
-            Send new code
+            {resendSec > 0 ? `Send new code (${resendSec}s)` : "Send new code"}
           </button>
           <button
             type="button"
-            className="block text-sm text-[var(--text-3)] hover:text-[var(--text)]"
+            className="block text-sm text-[var(--text-4)] hover:text-[var(--text-2)]"
             onClick={() => {
               setStep("email");
               setOtp("");
@@ -178,10 +185,7 @@ export function LoginForm() {
           </button>
         </>
       ) : null}
-      <Link
-        href="/"
-        className="mt-4 inline-flex text-sm text-[var(--gold)] underline-offset-4 hover:underline"
-      >
+      <Link href="/" className="link-accent inline-flex text-sm">
         Back to home
       </Link>
     </form>

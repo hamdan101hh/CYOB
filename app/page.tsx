@@ -2,75 +2,84 @@ import Link from "next/link";
 
 import { IntakeCta } from "@/components/home/intake-cta";
 
+const agents = [
+  "Industry Historian",
+  "Trend Analyst",
+  "Company Research",
+  "Competitor Scout",
+  "Gap Detection",
+  "Strategic Planner",
+  "Content Creator",
+  "Future Engine",
+  "Master Synthesis",
+  "Document Generator",
+];
+
 export default function HomePage() {
   return (
     <div className="relative overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_circle_at_20%_-10%,rgba(212,184,150,0.12),transparent_55%),radial-gradient(700px_circle_at_90%_10%,rgba(108,180,245,0.08),transparent_50%)]"
-      />
-      <section className="relative mx-auto flex max-w-5xl flex-col gap-8 px-6 pb-24 pt-20 md:px-10 md:pb-32 md:pt-28">
-        <p className="text-sm tracking-wide text-[var(--text-3)]">
-          cyob.site
-        </p>
-        <h1 className="max-w-3xl text-balance text-4xl leading-[1.08] text-[var(--text)] md:text-6xl">
-          A private AI war room for industry intelligence and company
-          strategy.
+      <section className="page-wrap relative max-w-5xl pb-20 pt-16 md:pb-28 md:pt-20">
+        <div className="chip chip-live w-fit">Private war room</div>
+        <h1 className="mt-6 max-w-3xl text-balance text-4xl font-semibold leading-[1.06] tracking-tight md:text-6xl">
+          <span className="gradient-text">Ten agents.</span> One strategy
+          command center.
         </h1>
-        <p className="max-w-2xl text-pretty text-lg text-[var(--text-2)] md:text-xl">
-          Ten specialist agents. One war room.{" "}
-          {process.env.NODE_ENV === "development" ? (
-            <>
-              Use{" "}
-              <span className="text-[var(--text)]">Skip login (local demo)</span>{" "}
-              on the email step to run the full flow without Supabase.
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="text-[var(--gold)] underline-offset-4 hover:underline"
-              >
-                Sign in
-              </Link>{" "}
-              to save runs, then start the intake.
-            </>
-          )}
+        <p className="page-lead mt-6">
+          cyob runs a full intelligence pipeline for your company — market,
+          competitors, gaps, plan, creative, and export — in one focused
+          workspace.
         </p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
           <IntakeCta />
-          <Link
-            href="/pricing"
-            className="inline-flex h-12 items-center justify-center rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-6 text-sm font-medium text-[var(--text-2)] transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:border-[var(--border-2)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-          >
+          <Link href="/pricing" className="btn btn-secondary h-12 px-6">
             View pricing
           </Link>
+          <Link href="/login" className="btn btn-secondary h-12 px-6 sm:ml-0">
+            Sign in
+          </Link>
         </div>
-        <div className="mt-6 grid gap-4 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5 md:grid-cols-3">
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Stack
-            </p>
-            <p className="text-sm text-[var(--text-2)]">
-              Next.js 15 · React 19 · TypeScript strict
-            </p>
+
+        <div className="mt-16 card card-pad">
+          <p className="eyebrow">Agent pipeline</p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            {agents.map((name, i) => (
+              <div
+                key={name}
+                className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2.5 transition-colors hover:border-[color-mix(in_oklab,var(--accent)_30%,transparent)]"
+              >
+                <p className="text-[10px] font-medium tabular-nums text-[var(--text-4)]">
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <p className="mt-1 text-xs font-medium leading-snug text-[var(--text-2)]">
+                  {name}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Styling
-            </p>
-            <p className="text-sm text-[var(--text-2)]">
-              Tailwind 4 · cinematic tokens in globals
-            </p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Env
-            </p>
-            <p className="text-sm text-[var(--text-2)]">
-              @t3-oss/env-nextjs with fail-fast defaults for prod
-            </p>
-          </div>
+        </div>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          {[
+            {
+              title: "Intake → run",
+              body: "Company, market, and vibe in minutes. Pipeline runs automatically.",
+            },
+            {
+              title: "Dashboard & plan",
+              body: "Live agent status, priorities, horizons, and a print-ready strategy PDF.",
+            },
+            {
+              title: "Library",
+              body: "Campaign frames and creative previews tied to each run.",
+            },
+          ].map((item) => (
+            <div key={item.title} className="card card-pad">
+              <p className="text-sm font-medium text-[var(--text)]">{item.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--text-3)]">
+                {item.body}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
     </div>

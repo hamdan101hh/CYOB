@@ -12,7 +12,7 @@ function statusLabel(status: string) {
 function statusClass(status: string) {
   if (status === "complete") return "text-[var(--green)]";
   if (status === "failed") return "text-[var(--red)]";
-  if (status === "running") return "text-[var(--gold)]";
+  if (status === "running") return "text-[var(--accent)]";
   return "text-[var(--text-3)]";
 }
 
@@ -30,22 +30,17 @@ export function RunsHub({
   const href = (id: string) => `/${linkPrefix}/${id}`;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 md:px-10">
-      <p className="text-sm text-[var(--text-3)]">{title}</p>
-      <h1 className="mt-2 text-3xl font-medium tracking-tight text-[var(--text)]">
-        Your runs
-      </h1>
-      <p className="mt-3 text-[var(--text-2)]">{description}</p>
+    <div className="page-wrap max-w-3xl">
+      <p className="eyebrow">{title}</p>
+      <h1 className="page-title">Your runs</h1>
+      <p className="page-lead">{description}</p>
 
       {runs.length === 0 ? (
-        <div className="mt-10 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-6">
+        <div className="card card-pad mt-10">
           <p className="text-sm text-[var(--text-2)]">
             No runs yet. Start an intake from the home page after signing in.
           </p>
-          <Link
-            href="/"
-            className="mt-4 inline-flex text-sm text-[var(--gold)] underline-offset-4 hover:underline"
-          >
+          <Link href="/" className="link-accent mt-4 inline-flex text-sm">
             Start intake
           </Link>
         </div>
@@ -55,19 +50,19 @@ export function RunsHub({
             <li key={run.id}>
               <Link
                 href={href(run.id)}
-                className="flex flex-col gap-1 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-5 py-4 transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:border-[var(--border-2)]"
+                className="card flex flex-col gap-1 px-5 py-4 transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:border-[var(--border-2)]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium text-[var(--text)]">
                     {run.company ?? "Untitled run"}
                   </span>
                   <span
-                    className={`text-xs font-medium uppercase tracking-wide ${statusClass(run.status)}`}
+                    className={`text-xs font-semibold uppercase tracking-wide ${statusClass(run.status)}`}
                   >
                     {statusLabel(run.status)}
                   </span>
                 </div>
-                <span className="text-xs text-[var(--text-3)]">
+                <span className="text-xs text-[var(--text-4)]">
                   {new Date(run.created_at).toLocaleString()}
                   {run.agent_status ? ` · ${run.agent_status}` : ""}
                 </span>

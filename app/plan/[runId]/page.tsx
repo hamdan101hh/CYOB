@@ -28,14 +28,14 @@ export default async function PlanRunPage({
 
   return (
     <div
-      className={`mx-auto max-w-5xl px-6 py-14 md:px-10 ${isPrint ? "print-plan" : ""}`}
+      className={`page-wrap max-w-5xl ${isPrint ? "print-plan" : ""}`}
     >
       <div
         className={`flex flex-wrap items-center justify-between gap-4 ${isPrint ? "no-print" : ""}`}
       >
         <div>
-          <p className="text-sm text-[var(--text-3)]">Strategic plan</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight text-[var(--text)]">
+          <p className="eyebrow">Strategic plan</p>
+          <h1 className="page-title mt-1">
             {bundle.intake.company}
           </h1>
         </div>
@@ -43,13 +43,13 @@ export default async function PlanRunPage({
           <RefreshTrendsButton runId={runId} />
           <Link
             href={`/plan/${runId}?print=1`}
-            className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--text)] hover:border-[var(--border-2)]"
+            className="btn btn-secondary h-10 px-4"
           >
             Print / PDF
           </Link>
           <Link
             href={`/dashboard/${runId}`}
-            className="text-sm text-[var(--gold)] underline-offset-4 hover:underline"
+            className="link-accent text-sm"
           >
             Back to dashboard
           </Link>
