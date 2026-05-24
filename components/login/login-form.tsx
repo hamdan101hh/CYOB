@@ -2,11 +2,13 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
+import { bootstrapAdminIfListed } from "@/lib/auth/bootstrap-admin";
 import {
   isValidOtpLength,
   normalizeOtpInput,
+  verifyEmailOtp,
 } from "@/lib/auth/verify-email-otp";
 import {
   createSupabaseBrowserClient,
@@ -28,8 +30,14 @@ function friendlyAuthError(message: string): string {
   return message;
 }
 
+function loginRedirectPath(next: string | null): string {
+  if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+  return "/dashboard";
+}
+
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"email" | "otp">("email");
@@ -52,8 +60,9 @@ export function LoginForm() {
       return;
     }
     setBusy(true);
+    const normalizedEmail = email.trim().toLowerCase();
     const { error: err } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
+      email: normalizedEmail,
       options: {
         shouldCreateUser: true,
       },
@@ -79,24 +88,30 @@ export function LoginForm() {
     }
 
     setBusy(true);
-    try {
-      const res = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), token }),
-      });
-      const body = (await res.json()) as { error?: string };
-      if (!res.ok) {
-        setError(friendlyAuthError(body.error ?? "Verification failed"));
-        return;
-      }
-      router.push("/dashboard");
-      router.refresh();
-    } catch {
-      setError("Network error. Try again.");
-    } finally {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setError("Supabase is not configured. Add keys to .env.local.");
       setBusy(false);
+      return;
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const verified = await verifyEmailOtp(supabase, normalizedEmail, token);
+    setBusy(false);
+    if (!verified.ok) {
+      setError(friendlyAuthError(verified.message));
+      return;
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user?.email) {
+      await bootstrapAdminIfListed(user.id, user.email);
+    }
+
+    router.push(loginRedirectPath(searchParams.get("next")));
+    router.refresh();
   };
 
   const onSubmit = (e: FormEvent) => {

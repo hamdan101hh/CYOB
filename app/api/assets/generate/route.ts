@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireUser, verifyRunOwnership } from "@/lib/auth/session";
 import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
 import { generateImage } from "@/lib/services/fal";
+import { generatePollinationsImage } from "@/lib/services/pollinations";
 import { isMonthlyCapExceeded, logSpending } from "@/lib/services/cap";
 
 const schema = z.object({
@@ -46,10 +47,18 @@ export async function POST(req: Request) {
   let providerError: string | undefined;
 
   if (parsed.data.asset_type === "image") {
-    const result = await generateImage({ prompt: parsed.data.prompt });
-    publicUrl = result.publicUrl;
-    costCents = result.costCents;
-    providerError = result.error;
+    const fal = await generateImage({ prompt: parsed.data.prompt });
+    if (fal.publicUrl) {
+      publicUrl = fal.publicUrl;
+      costCents = fal.costCents;
+    } else {
+      const free = await generatePollinationsImage({
+        prompt: parsed.data.prompt,
+      });
+      publicUrl = free.publicUrl;
+      costCents = free.costCents;
+      if (fal.error) providerError = fal.error;
+    }
   }
 
   const { data: row } = await admin
@@ -70,7 +79,12 @@ export async function POST(req: Request) {
     await logSpending({
       userId: auth.user.id,
       runId: parsed.data.run_id,
-      service: parsed.data.asset_type === "image" ? "fal" : "seedance",
+      service:
+        parsed.data.asset_type === "image"
+          ? costCents > 0
+            ? "fal"
+            : "pollinations"
+          : "seedance",
       costCents,
     });
   }
@@ -86,6 +100,6 @@ export async function POST(req: Request) {
       : providerError ??
         (parsed.data.asset_type === "video"
           ? "Video generation pending Seedance wiring."
-          : "Image queued; add FAL_KEY for live generation."),
+          : "Image URL ready (Pollinations free tier; add FAL_KEY for Flux)."),
   });
 }

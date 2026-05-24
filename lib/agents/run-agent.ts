@@ -5,7 +5,7 @@ import {
   buildMockOutputs,
   type AgentOutputPiece,
 } from "@/lib/orchestrator/mock-outputs";
-import { runCompetitorScrape } from "@/lib/services/apify";
+import { runCompetitorResearch } from "@/lib/services/competitor-research";
 import { completeAgentText, isLlmConfigured } from "@/lib/services/llm";
 
 export type RunAgentResult = AgentOutputPiece & {
@@ -46,20 +46,20 @@ export async function runAgent(
   let inputTokens = 0;
   let outputTokens = 0;
   let live = false;
-  let apifyNote: string | undefined;
+  let researchNote: string | undefined;
+  let researchSource: string | undefined;
 
-  if (
-    agentNumber === 4 &&
-    (ctx.tier === "studio" || ctx.tier === "enterprise")
-  ) {
-    const scrape = await runCompetitorScrape({
+  if (agentNumber === 4) {
+    const research = await runCompetitorResearch({
       company: ctx.intake.company,
       industry: ctx.intake.industry,
       geography: ctx.intake.geography,
+      tier: ctx.tier,
     });
-    if (scrape) {
-      apifyNote = scrape.summary;
-      costCents += scrape.costCents;
+    if (research) {
+      researchNote = research.summary;
+      researchSource = research.source;
+      costCents += research.costCents;
     }
   }
 
@@ -77,8 +77,11 @@ export async function runAgent(
     }
   }
 
-  if (apifyNote) {
-    output_text = `${output_text}\n\n## Competitor signals (Apify)\n${apifyNote}`;
+  if (researchNote) {
+    const label = researchSource
+      ? researchSource.charAt(0).toUpperCase() + researchSource.slice(1)
+      : "Web";
+    output_text = `${output_text}\n\n## Competitor signals (${label})\n${researchNote}`;
   }
 
   const output_json = {

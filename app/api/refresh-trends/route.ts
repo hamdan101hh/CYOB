@@ -101,6 +101,6 @@ export async function POST(req: Request) {
     live: piece.live,
     message: piece.live
       ? "Trend analyst refreshed with live model."
-      : "Trend refresh saved (mock — add ANTHROPIC_API_KEY or OPENAI_API_KEY for live).",
+      : "Trend refresh saved (mock — add GEMINI_API_KEY or a paid LLM key for live).",
   });
 }

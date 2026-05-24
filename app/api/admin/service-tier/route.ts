@@ -5,7 +5,18 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
 
 const schema = z.object({
-  service: z.enum(["claude", "gpt", "dalle", "seedance", "apify"]),
+  service: z.enum([
+    "claude",
+    "gpt",
+    "gemini",
+    "serper",
+    "tavily",
+    "fal",
+    "pollinations",
+    "dalle",
+    "seedance",
+    "apify",
+  ]),
   next_tier: z.string().min(1).max(80),
   monthly_cost_cents: z.number().int().nonnegative().default(0),
 });

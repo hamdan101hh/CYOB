@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
 import { env } from "@/lib/env";
+import { completeGeminiText } from "@/lib/services/gemini";
 
 export type LlmResult = {
   text: string;
@@ -24,7 +25,9 @@ function estimateOpenAiCostCents(input: number, output: number): number {
 }
 
 export function isLlmConfigured(): boolean {
-  return Boolean(env.ANTHROPIC_API_KEY || env.OPENAI_API_KEY);
+  return Boolean(
+    env.ANTHROPIC_API_KEY || env.OPENAI_API_KEY || env.GEMINI_API_KEY,
+  );
 }
 
 export async function completeAgentText(params: {
@@ -79,6 +82,9 @@ export async function completeAgentText(params: {
       costCents: estimateOpenAiCostCents(inputTokens, outputTokens),
     };
   }
+
+  const gemini = await completeGeminiText(params);
+  if (gemini) return gemini;
 
   return null;
 }

@@ -100,7 +100,7 @@ export function AdminPanel({
             onChange={(e) => setService(e.target.value)}
             className="h-11 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 text-sm text-[var(--text)]"
           >
-            {["claude", "gpt", "dalle", "seedance", "apify"].map((s) => (
+            {["claude", "gpt", "gemini", "serper", "tavily", "fal", "pollinations", "seedance", "apify"].map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>

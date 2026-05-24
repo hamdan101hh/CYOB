@@ -15,7 +15,9 @@ export default function LoginPage() {
         <LoginAuthNotice />
       </Suspense>
       <div className="mt-8">
-        <LoginForm />
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

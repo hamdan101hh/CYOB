@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { normalizeOtpInput } from "@/lib/auth/verify-email-otp";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseRouteHandlerClient,
+  jsonWithSupabaseCookies,
+} from "@/lib/supabase/route-handler";
 
 const schema = z.object({
   email: z.string().email(),
@@ -12,13 +15,14 @@ const schema = z.object({
 const OTP_TYPES = ["email", "signup", "recovery", "magiclink"] as const;
 
 export async function POST(req: Request) {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
+  const route = await createSupabaseRouteHandlerClient(req);
+  if (!route) {
     return NextResponse.json(
       { error: "Supabase not configured" },
       { status: 503 },
     );
   }
+  const { supabase, cookieCarrier } = route;
 
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
@@ -43,10 +47,14 @@ export async function POST(req: Request) {
       type,
     });
     if (!error && data.session) {
-      return NextResponse.json({ ok: true });
+      return jsonWithSupabaseCookies(cookieCarrier, { ok: true });
     }
     if (error?.message) lastError = error.message;
   }
 
-  return NextResponse.json({ error: lastError }, { status: 401 });
+  return jsonWithSupabaseCookies(
+    cookieCarrier,
+    { error: lastError },
+    { status: 401 },
+  );
 }
