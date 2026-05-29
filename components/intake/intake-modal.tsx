@@ -15,11 +15,14 @@ import {
   VIBE_OPTIONS,
 } from "@/lib/constants/intake-options";
 import { intakeSchema, type IntakePayload } from "@/lib/schemas/intake";
-import { bootstrapAdminIfListed } from "@/lib/auth/bootstrap-admin";
 import {
   createSupabaseBrowserClient,
   isSupabaseBrowserConfigured,
 } from "@/lib/supabase/client";
+
+async function bootstrapAdminSession() {
+  await fetch("/api/auth/bootstrap-admin", { method: "POST", credentials: "include" });
+}
 
 const STEP_FIELDS: (keyof IntakePayload)[][] = [
   ["company"],
@@ -214,7 +217,7 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
       data: { user },
     } = await supabase.auth.getUser();
     if (user?.email) {
-      await bootstrapAdminIfListed(user.id, user.email);
+      await bootstrapAdminSession();
     }
     const res = await fetch("/api/runs", {
       method: "POST",
