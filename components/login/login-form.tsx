@@ -4,12 +4,15 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { bootstrapAdminIfListed } from "@/lib/auth/bootstrap-admin";
 import {
   isValidOtpLength,
   normalizeOtpInput,
   verifyEmailOtp,
 } from "@/lib/auth/verify-email-otp";
+
+async function bootstrapAdminSession() {
+  await fetch("/api/auth/bootstrap-admin", { method: "POST", credentials: "include" });
+}
 import {
   createSupabaseBrowserClient,
   isSupabaseBrowserConfigured,
@@ -107,7 +110,7 @@ export function LoginForm() {
       data: { user },
     } = await supabase.auth.getUser();
     if (user?.email) {
-      await bootstrapAdminIfListed(user.id, user.email);
+      await bootstrapAdminSession();
     }
 
     router.push(loginRedirectPath(searchParams.get("next")));

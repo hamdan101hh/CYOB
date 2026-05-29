@@ -13,9 +13,15 @@ const nav = [
 
 export async function SiteHeader() {
   const supabase = await createSupabaseServerClient();
-  const user = supabase
-    ? (await supabase.auth.getUser()).data.user
-    : null;
+  let user: { email?: string } | null = null;
+  if (supabase) {
+    try {
+      const { data } = await supabase.auth.getUser();
+      user = data.user;
+    } catch {
+      user = null;
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_75%,transparent)] backdrop-blur-xl backdrop-saturate-150">
