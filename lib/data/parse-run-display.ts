@@ -18,6 +18,8 @@ export type CompetitorItem = {
   name: string;
   positioning: string;
   threat: string;
+  strength?: string;
+  weakness?: string;
 };
 
 export type PriorityItem = {
@@ -64,10 +66,26 @@ export function parseRunDisplay(bundle: RunBundle) {
     insights?: string[];
   } | null;
 
+  const trends = (t2?.trends ?? []).slice(0, 6).map((t) => ({
+    name: t.name,
+    heat: t.heat,
+    direction: t.direction,
+    channel: t.channel,
+    evidence_url: t.evidence_url,
+  }));
+
+  const competitors = (t4?.competitors ?? []).slice(0, 5).map((c) => ({
+    name: c.name,
+    positioning: c.positioning,
+    threat: c.threat,
+    strength: (c as CompetitorItem).strength,
+    weakness: (c as CompetitorItem).weakness,
+  }));
+
   return {
-    trends: (t2?.trends ?? []).slice(0, 6),
+    trends,
     gaps: (t5?.gaps ?? []).slice(0, 6),
-    competitors: (t4?.competitors ?? []).slice(0, 5),
+    competitors,
     priorities: (t6?.priorities ?? []).slice(0, 5),
     northStar: t6?.north_star ?? null,
     horizons: (t8?.horizons ?? []).slice(0, 3),

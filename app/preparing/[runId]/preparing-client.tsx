@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { listAgentTiles } from "@/lib/orchestrator/agent-metadata";
+import { AgentPipelineVisual } from "@/components/run/agent-pipeline-visual";
 
 type StatusPayload = {
   runId: string;
@@ -59,9 +59,8 @@ export function PreparingClient({ runId }: { runId: string }) {
     };
   }, [runId, router]);
 
-  const tiles = status
-    ? listAgentTiles(status.current_agent, status.status)
-    : listAgentTiles(0, "queued");
+  const currentAgent = status?.current_agent ?? 0;
+  const runStatus = status?.status ?? "queued";
 
   return (
     <div className="page-wrap max-w-4xl">
@@ -81,31 +80,11 @@ export function PreparingClient({ runId }: { runId: string }) {
         </p>
       )}
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {tiles.map((t) => (
-          <div
-            key={t.number}
-            className={`rounded-[var(--radius-lg)] border px-4 py-3 text-sm transition-transform duration-300 ease-[var(--ease-out-expo)] ${
-              t.state === "done"
-                ? "border-[var(--green)]/35 bg-[color-mix(in_oklab,var(--green)_12%,transparent)] text-[var(--text)]"
-                : t.state === "active"
-                  ? "border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--text)]"
-                  : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-3)]"
-            }`}
-          >
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Agent {String(t.number).padStart(2, "0")}
-            </p>
-            <p className="mt-1 font-medium text-[var(--text)]">{t.label}</p>
-            <p className="mt-1 text-xs text-[var(--text-3)]">
-              {t.state === "done"
-                ? "Complete"
-                : t.state === "active"
-                  ? "In motion"
-                  : "Waiting"}
-            </p>
-          </div>
-        ))}
+      <div className="mt-10">
+        <AgentPipelineVisual
+          currentAgent={currentAgent}
+          status={runStatus}
+        />
       </div>
 
       <p className="mt-10 text-xs text-[var(--text-4)]">

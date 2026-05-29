@@ -3,6 +3,8 @@ import { runAgent } from "@/lib/agents/run-agent";
 import type { AgentContext } from "@/lib/agents/context";
 import { demoRunGet, demoRunUpdate } from "@/lib/demo-run-store";
 import { AGENT_DEFINITIONS } from "@/lib/orchestrator/agent-metadata";
+import { effectivePipelineTier } from "@/lib/features/content-access";
+import { ensureCampaignAssets } from "@/lib/services/campaign-assets";
 import {
   isMonthlyCapExceeded,
   recordPipelineAgentCost,
@@ -141,8 +143,9 @@ export async function executeRunPipeline(runId: string) {
         .maybeSingle()
     : { data: null };
 
-  const tier =
-    (userRow?.tier as AgentContext["tier"] | undefined) ?? "free";
+  const tier = effectivePipelineTier(
+    (userRow?.tier as AgentContext["tier"] | undefined) ?? "free",
+  );
 
   const now = new Date().toISOString();
   await admin
@@ -223,14 +226,39 @@ export async function executeRunPipeline(runId: string) {
       }
     }
 
+    const agent7Json = prior[7]?.output_json as {
+      campaigns?: Array<{
+        name: string;
+        type?: string;
+        big_idea?: string;
+      }>;
+    };
+
     await admin
       .from("runs")
       .update({
         status: "complete",
         current_agent: 10,
+        agent_status: "Generating campaign visuals…",
+        error_message: null,
+      })
+      .eq("id", runId);
+
+    await ensureCampaignAssets({
+      runId,
+      userId,
+      company: intake.company,
+      industry: intake.industry,
+      vibe: intake.vibe,
+      campaigns: agent7Json?.campaigns ?? [],
+    });
+
+    await admin
+      .from("runs")
+      .update({
+        status: "complete",
         agent_status: "All agents complete",
         completed_at: new Date().toISOString(),
-        error_message: null,
       })
       .eq("id", runId);
   } catch (err) {

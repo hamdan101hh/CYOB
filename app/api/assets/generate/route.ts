@@ -5,6 +5,7 @@ import { requireUser, verifyRunOwnership } from "@/lib/auth/session";
 import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
 import { generateImage } from "@/lib/services/fal";
 import { generatePollinationsImage } from "@/lib/services/pollinations";
+import { generateSeedanceVideo } from "@/lib/services/seedance";
 import { isMonthlyCapExceeded, logSpending } from "@/lib/services/cap";
 
 const schema = z.object({
@@ -59,6 +60,14 @@ export async function POST(req: Request) {
       costCents = free.costCents;
       if (fal.error) providerError = fal.error;
     }
+  } else {
+    const video = await generateSeedanceVideo({ prompt: parsed.data.prompt });
+    if (video.publicUrl) {
+      publicUrl = video.publicUrl;
+      costCents = video.costCents;
+    } else if (video.error) {
+      providerError = video.error;
+    }
   }
 
   const { data: row } = await admin
@@ -80,11 +89,11 @@ export async function POST(req: Request) {
       userId: auth.user.id,
       runId: parsed.data.run_id,
       service:
-        parsed.data.asset_type === "image"
-          ? costCents > 0
+        parsed.data.asset_type === "video"
+          ? "seedance"
+          : costCents > 0
             ? "fal"
-            : "pollinations"
-          : "seedance",
+            : "pollinations",
       costCents,
     });
   }
@@ -99,7 +108,7 @@ export async function POST(req: Request) {
       ? "Asset generated."
       : providerError ??
         (parsed.data.asset_type === "video"
-          ? "Video generation pending Seedance wiring."
+          ? "Add FAL_KEY for Seedance video, or set ENABLE_SEEDANCE_VIDEO=false to skip."
           : "Image URL ready (Pollinations free tier; add FAL_KEY for Flux)."),
   });
 }

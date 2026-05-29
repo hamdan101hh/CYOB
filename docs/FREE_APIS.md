@@ -75,3 +75,16 @@ RESEND_API_KEY=
 ```
 
 Redeploy `production` after saving env vars.
+
+## Weekly budget (≈100 AED)
+
+Set on Vercel:
+
+```env
+WEEKLY_BUDGET_AED=100
+```
+
+- **Market examples** (Careem, noon, talabat, etc.) rotate from curated data — **free**, no API call.
+- **Rotate examples** button on the war room uses `POST /api/market-snapshot` (still free).
+- **Gemini + Serper free tiers** should stay within ~100 AED/week if you avoid paid image APIs (`FAL_KEY`) and limit manual trend refreshes.
+- Spending is tracked in `spending_log` (fils ≈ AED × 100).

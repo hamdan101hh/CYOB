@@ -1,3 +1,5 @@
+import "server-only";
+
 import { env } from "@/lib/env";
 import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
 

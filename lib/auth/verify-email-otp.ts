@@ -26,13 +26,13 @@ export async function verifyEmailOtp(
   let lastMessage = "Code expired or invalid. Request a new code.";
 
   for (const type of types) {
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       email,
       token,
       type,
     });
-    if (!error) return { ok: true };
-    lastMessage = error.message;
+    if (!error && data.session) return { ok: true };
+    if (error?.message) lastMessage = error.message;
   }
 
   return { ok: false, message: lastMessage };

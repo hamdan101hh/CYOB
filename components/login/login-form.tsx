@@ -2,9 +2,8 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
-import { bootstrapAdminIfListed } from "@/lib/auth/bootstrap-admin";
 import {
   isValidOtpLength,
   normalizeOtpInput,
@@ -27,6 +26,13 @@ function friendlyAuthError(message: string): string {
   if (lower.includes("expired") || lower.includes("invalid")) {
     return "Code expired or wrong. Click “Send new code” and paste the latest email code (same tab).";
   }
+  if (
+    lower.includes("magic link") ||
+    lower.includes("confirmation email") ||
+    lower.includes("confirmation mail")
+  ) {
+    return `Email could not be sent (${message}). Use sender noreply@cyob.site (domain verified), SMTP user resend, Confirm email OFF. Check Supabase → Logs → Auth and resend.com/emails.`;
+  }
   return message;
 }
 
@@ -36,7 +42,6 @@ function loginRedirectPath(next: string | null): string {
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -97,21 +102,26 @@ export function LoginForm() {
 
     const normalizedEmail = email.trim().toLowerCase();
     const verified = await verifyEmailOtp(supabase, normalizedEmail, token);
-    setBusy(false);
     if (!verified.ok) {
+      setBusy(false);
       setError(friendlyAuthError(verified.message));
       return;
     }
 
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await bootstrapAdminIfListed(user.id, user.email);
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setBusy(false);
+      setError(
+        "Code was accepted but sign-in did not stick. Try again in this browser, or clear cookies for cyob.site and retry.",
+      );
+      return;
     }
 
-    router.push(loginRedirectPath(searchParams.get("next")));
-    router.refresh();
+    setBusy(false);
+    const dest = loginRedirectPath(searchParams.get("next"));
+    window.location.assign(dest);
   };
 
   const onSubmit = (e: FormEvent) => {

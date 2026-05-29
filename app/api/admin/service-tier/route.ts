@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { requireAdmin } from "@/lib/auth/admin";
+import { requireAdminGate } from "@/lib/auth/require-admin-gate";
 import { createSupabaseAdminClientOrNull } from "@/lib/db/supabase-admin";
 
 const schema = z.object({
@@ -22,9 +22,9 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
-  const adminCheck = await requireAdmin();
-  if (!adminCheck.ok) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: adminCheck.status });
+  const gate = await requireAdminGate();
+  if (!gate.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: gate.status });
   }
 
   const parsed = schema.safeParse(await req.json());
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     id: parsed.data.service,
     current_tier: parsed.data.next_tier,
     monthly_cost_cents: parsed.data.monthly_cost_cents,
-    updated_by: adminCheck.userId,
+    updated_by: null,
     updated_at: new Date().toISOString(),
   });
 

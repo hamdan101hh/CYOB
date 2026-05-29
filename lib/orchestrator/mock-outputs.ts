@@ -1,4 +1,5 @@
 import type { IntakePayload } from "@/lib/schemas/intake";
+import { isUaeMarket } from "@/lib/market/get-market-lens";
 
 export type AgentOutputPiece = {
   agent_name: string;
@@ -11,6 +12,7 @@ export function buildMockOutputs(intake: Pick<
   "company" | "industry" | "geography" | "vibe"
 >): Record<number, AgentOutputPiece> {
   const { company, industry, geography, vibe } = intake;
+  const uae = isUaeMarket(geography);
 
   return {
     1: {
@@ -35,35 +37,71 @@ export function buildMockOutputs(intake: Pick<
       output_text: "Trend radar: 10 channels with heat scores and evidence URLs (demo data).",
       output_json: {
         version: 1,
-        trends: [
-          {
-            channel: "TikTok",
-            name: "Founder-led POV",
-            heat: 82,
-            direction: "up",
-            evidence_url: "https://example.com/trend-demo",
-            winner: "Category leaders posting 4x/week",
-            implication: `${company} should pilot a ${vibe} founder series in ${geography}.`,
-          },
-          {
-            channel: "Instagram Reels",
-            name: "Quiet luxury edits",
-            heat: 71,
-            direction: "up",
-            evidence_url: "https://example.com/reels-demo",
-            winner: "Heritage brands with soft palettes",
-            implication: "Match visual restraint to stated vibe.",
-          },
-          {
-            channel: "Google Search",
-            name: "Comparison shopping",
-            heat: 64,
-            direction: "flat",
-            evidence_url: "https://example.com/search-demo",
-            winner: "Review aggregators",
-            implication: "Own comparison keywords before Q3.",
-          },
-        ],
+        trends: uae
+          ? [
+              {
+                channel: "Instagram",
+                name: "Arabic-first Reels",
+                heat: 84,
+                direction: "up",
+                evidence_url:
+                  "https://www.youtube.com/results?search_query=UAE+arabic+instagram+reels+marketing",
+                winner: "Regional champions localizing tone",
+                implication: `${company} should test bilingual cuts for ${geography}.`,
+              },
+              {
+                channel: "LinkedIn",
+                name: "Founder credibility loops",
+                heat: 76,
+                direction: "up",
+                evidence_url:
+                  "https://www.youtube.com/results?search_query=UAE+founder+personal+brand",
+                winner: "B2B brands with weekly POV",
+                implication: `Match ${vibe} with executive-visible proof.`,
+              },
+              {
+                channel: "Paid social",
+                name: "Mall-to-mobile retargeting",
+                heat: 71,
+                direction: "up",
+                evidence_url:
+                  "https://www.youtube.com/results?search_query=Dubai+mall+marketing+digital",
+                winner: "Retailers bridging footfall to app",
+                implication: "Sync OOH with short video retargeting.",
+              },
+            ]
+          : [
+              {
+                channel: "TikTok",
+                name: "Founder-led POV",
+                heat: 82,
+                direction: "up",
+                evidence_url:
+                  "https://www.youtube.com/results?search_query=founder+led+marketing+trend",
+                winner: "Category leaders posting 4x/week",
+                implication: `${company} should pilot a ${vibe} founder series in ${geography}.`,
+              },
+              {
+                channel: "Instagram Reels",
+                name: "Quiet luxury edits",
+                heat: 71,
+                direction: "up",
+                evidence_url:
+                  "https://www.youtube.com/results?search_query=quiet+luxury+brand+film",
+                winner: "Heritage brands with soft palettes",
+                implication: "Match visual restraint to stated vibe.",
+              },
+              {
+                channel: "Google Search",
+                name: "Comparison shopping",
+                heat: 64,
+                direction: "flat",
+                evidence_url:
+                  "https://www.youtube.com/results?search_query=comparison+shopping+ads",
+                winner: "Review aggregators",
+                implication: "Own comparison keywords before Q3.",
+              },
+            ],
         white_space: [`AI-assisted sizing for ${industry}`],
         dying: ["Generic stock UGC without POV"],
       },
@@ -85,22 +123,46 @@ export function buildMockOutputs(intake: Pick<
       output_text: "Five named competitors with threat levels (demo).",
       output_json: {
         version: 1,
-        competitors: [
-          {
-            name: "Competitor Alpha",
-            positioning: "Category incumbent",
-            strength: "Distribution depth",
-            weakness: "Slow creative refresh",
-            threat: "High",
-          },
-          {
-            name: "Competitor Beta",
-            positioning: "Digital native",
-            strength: "Social velocity",
-            weakness: "Thin margin",
-            threat: "Medium",
-          },
-        ],
+        competitors: uae
+          ? [
+              {
+                name: "Careem",
+                positioning: "Super-app mobility",
+                strength: "Daily frequency",
+                weakness: "Promo noise",
+                threat: "High",
+              },
+              {
+                name: "talabat",
+                positioning: "Food delivery leader",
+                strength: "App habit",
+                weakness: "Commodity offers",
+                threat: "High",
+              },
+              {
+                name: "noon",
+                positioning: "Marketplace scale",
+                strength: "Merch breadth",
+                weakness: "Brand warmth",
+                threat: "Medium",
+              },
+            ]
+          : [
+              {
+                name: "Competitor Alpha",
+                positioning: "Category incumbent",
+                strength: "Distribution depth",
+                weakness: "Slow creative refresh",
+                threat: "High",
+              },
+              {
+                name: "Competitor Beta",
+                positioning: "Digital native",
+                strength: "Social velocity",
+                weakness: "Thin margin",
+                threat: "Medium",
+              },
+            ],
       },
     },
     5: {

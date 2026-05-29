@@ -96,11 +96,20 @@ export async function POST(req: Request) {
     costCents: piece.costCents,
   });
 
+  const trendMeta = piece.output_json as {
+    live_trends?: boolean;
+    platforms_scanned?: string[];
+  };
+
   return NextResponse.json({
     ok: true,
-    live: piece.live,
-    message: piece.live
-      ? "Trend analyst refreshed with live model."
-      : "Trend refresh saved (mock — add GEMINI_API_KEY or a paid LLM key for live).",
+    live: piece.live || Boolean(trendMeta.live_trends),
+    platforms: trendMeta.platforms_scanned ?? [],
+    message:
+      trendMeta.live_trends
+        ? `Live trends refreshed from web (${(trendMeta.platforms_scanned ?? []).join(", ") || "search"}).`
+        : piece.live
+          ? "Trend analyst refreshed with live model."
+          : "Add SERPER_API_KEY for live Instagram/TikTok/Facebook/YouTube trend scans.",
   });
 }

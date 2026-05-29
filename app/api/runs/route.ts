@@ -4,8 +4,19 @@ import { clientIp, rateLimit } from "@/lib/api/rate-limit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { demoRunCreate } from "@/lib/demo-run-store";
 import { executeRunPipeline } from "@/lib/orchestrator/run-pipeline";
-import { createRunSchema } from "@/lib/schemas/intake";
+import {
+  createRunSchema,
+  normalizeIntakePayload,
+} from "@/lib/schemas/intake";
 import type { IntakePayload } from "@/lib/schemas/intake";
+
+function getMissingColumnFromSchemaCacheError(message?: string): string | null {
+  if (!message) return null;
+  // Supabase/PostgREST example:
+  // "Could not find the 'ai_tools_known' column of 'intakes' in the schema cache"
+  const match = message.match(/'([^']+)' column of 'intakes'/i);
+  return match?.[1] ?? null;
+}
 
 export async function POST(req: Request) {
   const ip = clientIp(req);
@@ -27,7 +38,7 @@ export async function POST(req: Request) {
   }
 
   const { demo, ...rest } = parsed.data;
-  const intake: IntakePayload = { ...rest, otp: "" };
+  const intake: IntakePayload = normalizeIntakePayload(rest);
 
   const allowDemo =
     process.env.NODE_ENV === "development" && demo === true;
@@ -69,23 +80,49 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: intakeRow, error: intakeError } = await sb
-    .from("intakes")
-    .insert({
-      user_id: user.id,
-      company: rest.company,
-      industry: rest.industry,
-      geography: rest.geography,
-      city: rest.city || null,
-      size: rest.size,
-      vibe: rest.vibe,
-      audience: rest.audience,
-      audience_type: rest.audience_type,
-      budget: rest.budget,
-      notes: rest.notes || null,
-    })
-    .select("id")
-    .single();
+  const intakeInsert: Record<string, unknown> = {
+    user_id: user.id,
+    company: intake.company,
+    industry: intake.industry,
+    geography: intake.geography,
+    city: intake.city || null,
+    size: intake.size,
+    vibe: intake.vibe,
+    audience: intake.audience,
+    audience_type: intake.audience_type,
+    budget: intake.budget,
+    notes: intake.notes || null,
+    company_type: intake.company_type || null,
+    website: intake.website || null,
+    instagram: intake.instagram || null,
+    social_links: intake.social_links || null,
+    referral_source: intake.referral_source || null,
+    ai_tools_known: intake.ai_tools_known || null,
+  };
+
+  let intakeRow: { id: string } | null = null;
+  let intakeError: { message?: string } | null = null;
+
+  // Backward-compatible retry for environments where latest intake columns
+  // are not migrated yet. We progressively remove unknown columns and retry.
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const result = await sb
+      .from("intakes")
+      .insert(intakeInsert)
+      .select("id")
+      .single();
+
+    intakeRow = result.data as { id: string } | null;
+    intakeError = result.error as { message?: string } | null;
+
+    if (!intakeError && intakeRow) break;
+
+    const missingColumn = getMissingColumnFromSchemaCacheError(
+      intakeError?.message,
+    );
+    if (!missingColumn || !(missingColumn in intakeInsert)) break;
+    delete intakeInsert[missingColumn];
+  }
 
   if (intakeError || !intakeRow) {
     return NextResponse.json(

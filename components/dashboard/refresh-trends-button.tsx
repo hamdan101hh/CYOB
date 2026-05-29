@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function RefreshTrendsButton({ runId }: { runId: string }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -16,7 +18,8 @@ export function RefreshTrendsButton({ runId }: { runId: string }) {
         body: JSON.stringify({ run_id: runId }),
       });
       const data = (await res.json()) as { message?: string; error?: string };
-      setMsg(data.message ?? data.error ?? (res.ok ? "Done" : "Failed"));
+      setMsg(data.message ?? data.error ?? (res.ok ? "Updated" : "Failed"));
+      if (res.ok) router.refresh();
     } catch {
       setMsg("Network error");
     }

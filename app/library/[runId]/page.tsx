@@ -1,9 +1,12 @@
 import Link from "next/link";
 
-import { TierLock } from "@/components/run/tier-lock";
+import { AssetPromptStudio } from "@/components/library/asset-prompt-studio";
+import { LibraryCompareRow } from "@/components/run/visual-blocks";
 import { listRunAssets } from "@/lib/data/list-run-assets";
 import { requireRunBundle } from "@/lib/data/require-run";
 import { parseRunDisplay } from "@/lib/data/parse-run-display";
+import { isRunContentLocked } from "@/lib/features/content-access";
+import { TierLock } from "@/components/run/tier-lock";
 
 export default async function LibraryRunPage({
   params,
@@ -14,12 +17,15 @@ export default async function LibraryRunPage({
   const bundle = await requireRunBundle(runId, `/library/${runId}`);
   const assets = await listRunAssets(runId);
 
-  const locked = bundle.tier === "free";
+  const locked = isRunContentLocked(bundle.tier);
   const display = parseRunDisplay(bundle);
   const campaigns =
     display.campaigns.length > 0
       ? display.campaigns
-      : [{ name: "Campaign 1", big_idea: bundle.outputs[7]?.output_text }];
+      : [
+          { name: "The Proof Room", big_idea: "Proof-led launch" },
+          { name: "Founder Frequency", big_idea: "Weekly POV" },
+        ];
 
   const assetsByCampaign = new Map<number, typeof assets>();
   for (const asset of assets) {
@@ -29,134 +35,69 @@ export default async function LibraryRunPage({
     assetsByCampaign.set(idx, list);
   }
 
+  const needsAssets =
+    assets.filter((a) => a.public_url && a.asset_type === "image").length <
+    Math.min(campaigns.length, 1);
+
   return (
-    <div className="page-wrap">
+    <div className="page-wrap space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-[var(--text-3)]">Creative library</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight text-[var(--text)]">
-            {bundle.intake.company}
-          </h1>
+          <p className="eyebrow">Creative library</p>
+          <h1 className="page-title mt-1">{bundle.intake.company}</h1>
+          <p className="mt-1 text-xs text-[var(--text-4)]">
+            Visual compare · minimal copy
+          </p>
         </div>
-        <Link
-          href={`/dashboard/${runId}`}
-          className="link-accent text-sm"
-        >
-          Back to dashboard
+        <Link href={`/dashboard/${runId}`} className="link-accent text-sm">
+          ← War room
         </Link>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
+      {needsAssets ? (
+        <AssetPromptStudio
+          runId={runId}
+          company={bundle.intake.company}
+          industry={bundle.intake.industry}
+          vibe={bundle.intake.vibe}
+          campaignName={campaigns[0]?.name}
+        />
+      ) : null}
+
+      <div className="space-y-10">
         {campaigns.map((campaign, i) => {
-          const index = i + 1;
           const campaignAssets = assetsByCampaign.get(i) ?? [];
           const hero = campaignAssets.find((a) => a.asset_type === "image");
-          const video = campaignAssets.find((a) => a.asset_type === "video");
+          const alt = campaignAssets.find((a) => a.asset_type === "video");
 
           return (
-            <TierLock key={campaign.name} locked={locked && index > 1} preview={locked && index === 1}>
-              <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
-                <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-                  {campaign.type ?? "Campaign"} · {campaign.name}
-                </p>
-                <p className="mt-3 text-sm text-[var(--text-2)]">
-                  {campaign.big_idea ??
-                    "DALL-E frames and Seedance previews render here after Agent 07."}
-                </p>
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <PreviewTile
-                    title="Hero frame"
-                    campaign={index}
-                    accent="var(--gold)"
-                    imageUrl={hero?.public_url}
-                  />
-                  <PreviewTile
-                    title="Video preview"
-                    campaign={index}
-                    accent="var(--blue)"
-                    imageUrl={video?.public_url}
+            <TierLock key={campaign.name} locked={locked && i > 0} preview={locked && i === 0}>
+              <article className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]">
+                <div className="border-b border-[var(--border)] px-5 py-3">
+                  <p className="text-[10px] uppercase tracking-wide text-[var(--accent)]">
+                    {campaign.type ?? "Campaign"} {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h2 className="text-lg font-medium text-[var(--text)]">
+                    {campaign.name}
+                  </h2>
+                </div>
+
+                <div className="p-5">
+                  <LibraryCompareRow
+                    titleA="Concept A"
+                    titleB="Concept B"
+                    imageA={hero?.public_url}
+                    imageB={alt?.public_url ?? hero?.public_url}
+                    slogan={
+                      campaign.big_idea?.slice(0, 72) ??
+                      "Side-by-side before motion"
+                    }
                   />
                 </div>
-              </div>
+              </article>
             </TierLock>
           );
         })}
-      </div>
-    </div>
-  );
-}
-
-function PreviewTile({
-  title,
-  campaign,
-  accent,
-  imageUrl,
-}: {
-  title: string;
-  campaign: number;
-  accent: string;
-  imageUrl?: string | null;
-}) {
-  if (imageUrl) {
-    return (
-      <div className="relative aspect-video overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-3)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUrl}
-          alt={`${title} for campaign ${campaign}`}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-3">
-          <p className="text-xs font-medium text-[var(--text)]">{title}</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative aspect-video overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-3)]">
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 0 360 202"
-        role="img"
-        aria-label={`${title} placeholder for campaign ${campaign}`}
-      >
-        <defs>
-          <radialGradient id={`glow-${campaign}-${title}`} cx="28%" cy="22%">
-            <stop offset="0%" stopColor={accent} stopOpacity="0.45" />
-            <stop offset="60%" stopColor={accent} stopOpacity="0.08" />
-            <stop offset="100%" stopColor="#08080c" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id={`line-${campaign}-${title}`} x1="0" x2="1">
-            <stop offset="0%" stopColor={accent} stopOpacity="0.1" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0.03" />
-          </linearGradient>
-        </defs>
-        <rect width="360" height="202" fill="#0e0e15" />
-        <rect width="360" height="202" fill={`url(#glow-${campaign}-${title})`} />
-        <path
-          d="M24 148 C82 96, 116 182, 178 118 S288 72, 336 116"
-          fill="none"
-          stroke={`url(#line-${campaign}-${title})`}
-          strokeWidth="18"
-        />
-        <rect
-          x="24"
-          y="24"
-          width="82"
-          height="8"
-          rx="4"
-          fill={accent}
-          opacity="0.75"
-        />
-        <rect x="24" y="42" width="146" height="6" rx="3" fill="#f5f5f7" opacity="0.18" />
-        <circle cx="300" cy="54" r="26" fill={accent} opacity="0.16" />
-      </svg>
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-3">
-        <p className="text-xs font-medium text-[var(--text)]">{title}</p>
-        <p className="text-[10px] text-[var(--text-3)]">
-          Campaign {campaign} placeholder
-        </p>
       </div>
     </div>
   );

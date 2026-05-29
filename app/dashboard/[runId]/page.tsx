@@ -1,9 +1,12 @@
 import Link from "next/link";
+
+import { LiveIntelligenceDashboard } from "@/components/dashboard/live-intelligence-dashboard";
 import { RefreshTrendsButton } from "@/components/dashboard/refresh-trends-button";
-import { TierLock } from "@/components/run/tier-lock";
+import { LiveBadge } from "@/components/ui/live-badge";
 import { requireRunBundle } from "@/lib/data/require-run";
 import { parseRunDisplay } from "@/lib/data/parse-run-display";
-import { listAgentTiles } from "@/lib/orchestrator/agent-metadata";
+import { isRunContentLocked } from "@/lib/features/content-access";
+import { listRunAssets } from "@/lib/data/list-run-assets";
 
 export default async function DashboardRunPage({
   params,
@@ -12,143 +15,61 @@ export default async function DashboardRunPage({
 }) {
   const { runId } = await params;
   const bundle = await requireRunBundle(runId, `/dashboard/${runId}`);
+  const assets = await listRunAssets(runId);
 
-  const tiles = listAgentTiles(bundle.current_agent, bundle.status);
-  const locked = bundle.tier === "free";
+  const locked = isRunContentLocked(bundle.tier);
   const display = parseRunDisplay(bundle);
+  const heroAsset = assets.find((a) => a.asset_type === "image");
 
   return (
-    <div className="page-wrap space-y-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="page-wrap max-w-6xl space-y-8">
+      <header className="flex flex-col gap-4 border-b border-[var(--border)] pb-8 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="eyebrow">Dashboard</p>
-          <h1 className="page-title mt-1 md:text-4xl">
-            {bundle.intake.company}
-          </h1>
-          <p className="mt-2 text-sm text-[var(--text-2)]">
-            {bundle.intake.industry} · {bundle.intake.geography}
-            {bundle.intake.city ? ` · ${bundle.intake.city}` : ""} ·{" "}
-            <span className="text-[var(--text-3)]">{bundle.intake.vibe}</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="eyebrow">Live intelligence</p>
+            <LiveBadge state={bundle.status === "running" ? "updating" : "synced"} />
+          </div>
+          <h1 className="page-title mt-2 md:text-4xl">{bundle.intake.company}</h1>
+          <p className="mt-2 text-sm text-[var(--text-3)]">
+            {bundle.intake.industry}
+            {bundle.intake.city ? ` · ${bundle.intake.city}` : ""}
+            {bundle.intake.geography ? ` · ${bundle.intake.geography}` : ""}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <RefreshTrendsButton runId={runId} />
-          <Link
-            href={`/plan/${runId}`}
-            className="btn btn-secondary h-10 px-4"
-          >
-            Open plan
+          <Link href={`/plan/${runId}`} className="btn btn-primary h-10 px-4">
+            Plan
           </Link>
-          <Link
-            href={`/library/${runId}`}
-            className="btn btn-secondary h-10 px-4"
-          >
-            Open library
+          <Link href={`/library/${runId}`} className="btn btn-secondary h-10 px-4">
+            Library
           </Link>
-          {locked ? (
-            <Link
-              href="/pricing"
-              className="btn btn-primary h-10 px-4"
-            >
-              Upgrade
-            </Link>
-          ) : null}
         </div>
-      </div>
+      </header>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--text-4)]">
-          Agent pipeline
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {tiles.map((t) => (
-            <div
-              key={t.number}
-              className={`rounded-[var(--radius-md)] border px-3 py-3 text-xs ${
-                t.state === "done"
-                  ? "border-[var(--green)]/30 bg-[color-mix(in_oklab,var(--green)_10%,transparent)] text-[var(--text)]"
-                  : t.state === "active"
-                    ? "border-[color-mix(in_oklab,var(--accent)_40%,transparent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--text)]"
-                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-3)]"
-              }`}
-            >
-              <p className="text-[var(--text-4)]">#{String(t.number).padStart(2, "0")}</p>
-              <p className="mt-1 text-sm font-medium text-[var(--text)]">{t.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <LiveIntelligenceDashboard
+        company={bundle.intake.company}
+        trends={display.trends}
+        competitors={display.competitors}
+        heroImageUrl={heroAsset?.public_url}
+        currentAgent={bundle.current_agent}
+        status={bundle.status}
+        runId={runId}
+        insights={display.insights}
+      />
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <TierLock locked={locked}>
-          <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Trend radar
-            </p>
-            <ul className="mt-3 space-y-2">
-              {display.trends.map((t) => (
-                <li key={t.name} className="text-sm text-[var(--text-2)]">
-                  <span className="text-[var(--text)]">{t.name}</span>
-                  <span className="ml-2 text-[var(--amber)]">
-                    {typeof t.heat === "number" ? `${t.heat}/100` : t.heat}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </TierLock>
-        <TierLock locked={locked}>
-          <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Gap board
-            </p>
-            <ul className="mt-3 space-y-2">
-              {display.gaps.map((g) => (
-                <li key={g.name} className="text-sm text-[var(--text-2)]">
-                  {g.name}{" "}
-                  <span className="text-[var(--red)]">({g.severity})</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </TierLock>
-        <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-5">
-          <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-            Competitors
-          </p>
-          <ul className="mt-3 space-y-2">
-            {display.competitors.map((c) => (
-              <li key={c.name} className="text-sm text-[var(--text-2)]">
-                {c.name} — {c.threat}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--text-4)]">
-          Latest agent memos
-        </h2>
-        <div className="space-y-3">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
-            const out = bundle.outputs[n];
-            return (
-              <TierLock key={n} locked={locked && n > 1} preview={locked && n === 1}>
-                <article className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-2)] p-5">
-                  <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-                    Agent {String(n).padStart(2, "0")}
-                  </p>
-                  <p className="mt-2 text-sm text-[var(--text-2)]">
-                    {out?.output_text ??
-                      "Waiting for orchestrator output for this agent."}
-                  </p>
-                </article>
-              </TierLock>
-            );
-          })}
-        </div>
-      </section>
+      {!locked ? (
+        <p className="text-center text-xs text-[var(--text-4)]">
+          Full memos in{" "}
+          <Link href={`/plan/${runId}`} className="link-accent">
+            Plan
+          </Link>
+          {" · "}Frames in{" "}
+          <Link href={`/library/${runId}`} className="link-accent">
+            Library
+          </Link>
+        </p>
+      ) : null}
     </div>
   );
 }

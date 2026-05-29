@@ -21,6 +21,16 @@ export const GEOGRAPHY_CHIPS = [
   "Other",
 ] as const;
 
+export const COMPANY_TYPE_OPTIONS = [
+  "Startup",
+  "Small business",
+  "Scale-up",
+  "Enterprise",
+  "Agency / consultancy",
+  "Nonprofit",
+  "Other",
+] as const;
+
 export const SIZE_OPTIONS = [
   "Solo / founder",
   "2–10",
@@ -53,4 +63,25 @@ export const BUDGET_OPTIONS = [
   "$20k–$75k / mo",
   "$75k–$250k / mo",
   "$250k+ / mo",
+  "Prefer not to say",
+] as const;
+
+export const REFERRAL_OPTIONS = [
+  "Google search",
+  "Friend / colleague",
+  "LinkedIn",
+  "Instagram / TikTok",
+  "YouTube / podcast",
+  "Other",
+] as const;
+
+export const AI_TOOLS_OPTIONS = [
+  "ChatGPT",
+  "Claude",
+  "Gemini",
+  "Copilot",
+  "Perplexity",
+  "Midjourney",
+  "None yet",
+  "Other",
 ] as const;

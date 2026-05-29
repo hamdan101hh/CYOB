@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 
 import { SiteHeader } from "@/components/site-header";
+import { SplashGate } from "@/components/splash/splash-gate";
 
 import "./globals.css";
 
@@ -58,15 +59,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-dvh font-sans antialiased">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-[var(--radius-md)] focus:bg-[var(--bg-3)] focus:px-3 focus:py-2 focus:text-sm focus:text-[var(--text)]"
-        >
-          Skip to content
-        </a>
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <Analytics />
+        <SplashGate>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-[var(--radius-md)] focus:bg-[var(--bg-3)] focus:px-3 focus:py-2 focus:text-sm focus:text-[var(--text)]"
+          >
+            Skip to content
+          </a>
+          <SiteHeader />
+          <main id="main">{children}</main>
+          <Analytics />
+        </SplashGate>
       </body>
     </html>
   );

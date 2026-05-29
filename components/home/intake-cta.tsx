@@ -12,7 +12,7 @@ export function IntakeCta() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="btn btn-primary h-12 px-6 text-base"
+        className="btn btn-primary btn-glow h-12 px-6 text-base"
       >
         Start the intake
       </button>

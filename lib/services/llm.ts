@@ -3,6 +3,7 @@ import OpenAI from "openai";
 
 import { env } from "@/lib/env";
 import { completeGeminiText } from "@/lib/services/gemini";
+import { resolveLlmOrder, type LlmProviderId } from "@/lib/services/llm-router";
 
 export type LlmResult = {
   text: string;
@@ -12,10 +13,9 @@ export type LlmResult = {
   costCents: number;
 };
 
-const ANTHROPIC_MODEL = "claude-3-5-haiku-latest";
-const OPENAI_MODEL = "gpt-4o-mini";
+const ANTHROPIC_MODEL = env.ANTHROPIC_MODEL ?? "claude-3-5-haiku-latest";
+const OPENAI_MODEL = env.OPENAI_MODEL ?? process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 
-/** Rough per-1M token pricing in cents (input/output blended estimate). */
 function estimateAnthropicCostCents(input: number, output: number): number {
   return Math.ceil((input * 0.25 + output * 1.25) / 10_000);
 }
@@ -30,18 +30,15 @@ export function isLlmConfigured(): boolean {
   );
 }
 
-export async function completeAgentText(params: {
-  system: string;
-  user: string;
-  maxTokens?: number;
-}): Promise<LlmResult | null> {
-  const maxTokens = params.maxTokens ?? 4096;
-
-  if (env.ANTHROPIC_API_KEY) {
+async function completeWithProvider(
+  provider: LlmProviderId,
+  params: { system: string; user: string; maxTokens: number },
+): Promise<LlmResult | null> {
+  if (provider === "anthropic" && env.ANTHROPIC_API_KEY) {
     const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
     const msg = await anthropic.messages.create({
       model: ANTHROPIC_MODEL,
-      max_tokens: maxTokens,
+      max_tokens: params.maxTokens,
       system: params.system,
       messages: [{ role: "user", content: params.user }],
     });
@@ -61,11 +58,11 @@ export async function completeAgentText(params: {
     };
   }
 
-  if (env.OPENAI_API_KEY) {
+  if (provider === "openai" && env.OPENAI_API_KEY) {
     const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
     const completion = await openai.chat.completions.create({
       model: OPENAI_MODEL,
-      max_tokens: maxTokens,
+      max_tokens: params.maxTokens,
       messages: [
         { role: "system", content: params.system },
         { role: "user", content: params.user },
@@ -83,8 +80,29 @@ export async function completeAgentText(params: {
     };
   }
 
-  const gemini = await completeGeminiText(params);
-  if (gemini) return gemini;
+  if (provider === "gemini" && env.GEMINI_API_KEY) {
+    return completeGeminiText(params);
+  }
+
+  return null;
+}
+
+export async function completeAgentText(params: {
+  system: string;
+  user: string;
+  maxTokens?: number;
+}): Promise<LlmResult | null> {
+  const maxTokens = params.maxTokens ?? 4096;
+  const order = resolveLlmOrder();
+
+  for (const provider of order) {
+    const result = await completeWithProvider(provider, {
+      system: params.system,
+      user: params.user,
+      maxTokens,
+    });
+    if (result?.text) return result;
+  }
 
   return null;
 }

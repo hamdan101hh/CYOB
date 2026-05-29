@@ -1,69 +1,47 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import type { User } from "@supabase/supabase-js";
 
 import {
-  AUDIENCE_TYPE_CHIPS,
   BUDGET_OPTIONS,
   GEOGRAPHY_CHIPS,
   INDUSTRY_CHIPS,
-  SIZE_OPTIONS,
   VIBE_OPTIONS,
 } from "@/lib/constants/intake-options";
 import { intakeSchema, type IntakePayload } from "@/lib/schemas/intake";
-import { bootstrapAdminIfListed } from "@/lib/auth/bootstrap-admin";
 import {
   createSupabaseBrowserClient,
   isSupabaseBrowserConfigured,
 } from "@/lib/supabase/client";
 
-const STEP_FIELDS: (keyof IntakePayload)[][] = [
-  ["company"],
-  ["industry"],
-  ["geography", "city"],
-  ["size"],
-  ["vibe"],
-  ["audience", "audience_type"],
-  ["budget", "notes"],
-  ["email"],
-  ["otp"],
-];
+const DRAFT_KEY = "cyob-intake-draft-v3";
+const STEPS = ["Basics", "Brand", "Start"] as const;
 
-const DRAFT_KEY = "cyob-intake-draft";
-
-const STEP_LABELS = [
-  "Company",
-  "Industry",
-  "Geography",
-  "Size",
-  "Brand vibe",
-  "Audience",
-  "Budget",
-  "Email",
-  "Verify",
-];
-
-type IntakeModalProps = {
+export function IntakeModal({
+  open,
+  onClose,
+}: {
   open: boolean;
   onClose: () => void;
-};
-
-export function IntakeModal({ open, onClose }: IntakeModalProps) {
+}) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const [otpSent, setOtpSent] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(intakeSchema),
+  const form = useForm<IntakePayload>({
     defaultValues: {
       company: "",
-      industry: "",
-      geography: "",
+      industry: "Consumer",
+      geography: "UAE",
       city: "",
       size: "",
       vibe: "",
@@ -71,6 +49,11 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
       audience_type: "",
       budget: "",
       notes: "",
+      website: "",
+      instagram: "",
+      social_links: "",
+      referral_source: "",
+      ai_tools_known: "",
       email: "",
       otp: "",
     },
@@ -78,31 +61,37 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
 
   useEffect(() => {
     if (!open) {
-      setStep(0);
       setFormError(null);
-      form.reset();
+      setOtpSent(false);
+      setStep(0);
       return;
     }
+
+    const supabase = createSupabaseBrowserClient();
+    if (supabase) {
+      void supabase.auth.getUser().then(({ data }) => {
+        setAuthUser(data.user ?? null);
+        if (data.user?.email) form.setValue("email", data.user.email);
+      });
+    }
+
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<IntakePayload>;
-        form.reset({ ...form.getValues(), ...parsed, otp: "" });
-      }
+      if (raw) form.reset({ ...form.getValues(), ...JSON.parse(raw), otp: "" });
     } catch {
-      /* ignore corrupt draft */
+      /* ignore */
     }
   }, [open, form]);
 
   useEffect(() => {
     if (!open) return;
     const sub = form.watch((values) => {
-      const { otp: _discardOtp, ...draft } = values;
-      void _discardOtp;
+      const { otp: _o, ...draft } = values;
+      void _o;
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
       } catch {
-        /* storage full */
+        /* ignore */
       }
     });
     return () => sub.unsubscribe();
@@ -119,358 +108,337 @@ export function IntakeModal({ open, onClose }: IntakeModalProps) {
 
   if (!open) return null;
 
-  const next = async () => {
-    setFormError(null);
-    const fields = STEP_FIELDS[step];
-    const ok = await form.trigger(fields, { shouldFocus: true });
-    if (!ok) return;
-    setStep((s) => Math.min(s + 1, STEP_FIELDS.length - 1));
-  };
+  const inputClass =
+    "w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-3 text-sm text-[var(--text)] outline-none focus:border-[color-mix(in_oklab,var(--accent)_45%,transparent)]";
 
-  const back = () => {
+  const selectClass = `${inputClass} appearance-none`;
+
+  const startRun = async () => {
     setFormError(null);
-    setStep((s) => Math.max(s - 1, 0));
+    setBusy(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      let user = authUser;
+      if (!user && supabase) {
+        const { data } = await supabase.auth.getUser();
+        user = data.user ?? null;
+        setAuthUser(user);
+      }
+
+      if (!user) {
+        const email = form.getValues("email")?.trim();
+        if (!email) {
+          setFormError("Enter email or sign in first.");
+          setBusy(false);
+          return;
+        }
+        if (!otpSent) {
+          setFormError('Tap "Send code" then enter the 6-digit code.');
+          setBusy(false);
+          return;
+        }
+        const otpToken = (form.getValues("otp") ?? "").replace(/\D/g, "");
+        if (otpToken.length < 6) {
+          setFormError("Enter the full 6-digit code.");
+          setBusy(false);
+          return;
+        }
+        if (!supabase) {
+          setFormError("Auth not configured.");
+          setBusy(false);
+          return;
+        }
+        const { verifyEmailOtp } = await import("@/lib/auth/verify-email-otp");
+        const verified = await verifyEmailOtp(supabase, email, otpToken);
+        if (!verified.ok) {
+          setFormError(verified.message);
+          setBusy(false);
+          return;
+        }
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session) {
+          setFormError("Sign-in failed. Try again.");
+          setBusy(false);
+          return;
+        }
+        user = sessionData.session.user;
+        setAuthUser(user);
+      }
+
+      const parsed = intakeSchema.safeParse(form.getValues());
+      if (!parsed.success) {
+        setFormError("Check your entries.");
+        setBusy(false);
+        return;
+      }
+
+      const res = await fetch("/api/runs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...parsed.data, demo: false }),
+      });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => null)) as { error?: string } | null;
+        setFormError(j?.error ?? "Could not start run.");
+        setBusy(false);
+        return;
+      }
+      const data = (await res.json()) as { runId: string };
+      localStorage.removeItem(DRAFT_KEY);
+      onClose();
+      router.push(`/preparing/${data.runId}`);
+    } catch {
+      setFormError("Something went wrong.");
+      setBusy(false);
+    }
   };
 
   const sendOtp = async () => {
     setFormError(null);
-    const ok = await form.trigger(["email"]);
-    if (!ok) return;
-    const supabase = createSupabaseBrowserClient();
-    if (!supabase) {
-      setFormError("Supabase is not configured in this environment.");
+    const email = form.getValues("email")?.trim();
+    if (!email) {
+      setFormError("Enter your email.");
       return;
     }
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
     setBusy(true);
     const { error } = await supabase.auth.signInWithOtp({
-      email: form.getValues("email"),
+      email,
       options: { shouldCreateUser: true },
     });
     setBusy(false);
-    if (error) {
-      setFormError(error.message);
-      return;
-    }
-    setStep(8);
+    if (error) setFormError(error.message);
+    else setOtpSent(true);
   };
-
-  const submitDemo = async () => {
-    setBusy(true);
-    setFormError(null);
-    const v = await form.trigger(
-      ["company", "industry", "geography", "city", "size", "vibe", "audience", "audience_type", "budget", "notes", "email"],
-      { shouldFocus: true },
-    );
-    if (!v) {
-      setBusy(false);
-      return;
-    }
-    const body = { ...form.getValues(), demo: true };
-    const res = await fetch("/api/runs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    setBusy(false);
-    if (!res.ok) {
-      const j = (await res.json().catch(() => null)) as { error?: string } | null;
-      setFormError(j?.error ?? "Could not start demo run.");
-      return;
-    }
-    const data = (await res.json()) as { runId: string };
-    onClose();
-    router.push(`/preparing/${data.runId}`);
-  };
-
-  const submitLive = async () => {
-    setBusy(true);
-    setFormError(null);
-    const otpToken = (form.getValues("otp") ?? "").replace(/\D/g, "").trim();
-    if (otpToken.length < 6 || otpToken.length > 8) {
-      setFormError("Enter the full code from your email.");
-      setBusy(false);
-      return;
-    }
-    const ok = await form.trigger(["otp"]);
-    if (!ok) {
-      setBusy(false);
-      return;
-    }
-    const supabase = createSupabaseBrowserClient();
-    if (!supabase) {
-      setFormError("Supabase client unavailable.");
-      setBusy(false);
-      return;
-    }
-    const email = form.getValues("email");
-    const { verifyEmailOtp } = await import("@/lib/auth/verify-email-otp");
-    const verified = await verifyEmailOtp(supabase, email, otpToken);
-    if (!verified.ok) {
-      setFormError(verified.message);
-      setBusy(false);
-      return;
-    }
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user?.email) {
-      await bootstrapAdminIfListed(user.id, user.email);
-    }
-    const res = await fetch("/api/runs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form.getValues(), demo: false }),
-    });
-    setBusy(false);
-    if (!res.ok) {
-      const j = (await res.json().catch(() => null)) as { error?: string } | null;
-      setFormError(j?.error ?? "Could not create run.");
-      return;
-    }
-    const data = (await res.json()) as { runId: string };
-    try {
-      localStorage.removeItem(DRAFT_KEY);
-    } catch {
-      /* ignore */
-    }
-    onClose();
-    router.push(`/preparing/${data.runId}`);
-  };
-
-  const progressPct = Math.round(((step + 1) / STEP_FIELDS.length) * 100);
-
-  const ChipRow = (
-    field: keyof IntakePayload,
-    options: readonly string[],
-  ) => (
-    <div className="flex flex-wrap gap-2">
-      {options.map((opt) => (
-        <button
-          key={opt}
-          type="button"
-          className={`rounded-[var(--radius-md)] border px-3 py-2 text-sm transition-colors duration-150 ease-[var(--ease-out-expo)] ${
-            form.watch(field) === opt
-              ? "border-[var(--gold)] bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] text-[var(--text)]"
-              : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-2)] hover:border-[var(--border-2)]"
-          }`}
-          onClick={() => form.setValue(field, opt, { shouldValidate: true })}
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  );
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-0 sm:items-center sm:p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="intake-title"
     >
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-3)] p-6 shadow-2xl">
-        <div className="flex items-start justify-between gap-4">
+      <div className="flex max-h-[94vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg-2)] shadow-2xl sm:rounded-[var(--radius-xl)]">
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-[var(--text-4)]">
-              Step {step + 1} / {STEP_FIELDS.length}
+            <p className="text-xs text-[var(--text-4)]">
+              Step {step + 1} of {STEPS.length} · {STEPS[step]}
             </p>
-            <h2
-              id="intake-title"
-              className="mt-1 text-xl font-medium tracking-tight text-[var(--text)]"
-            >
-              {STEP_LABELS[step]}
-            </h2>
+            <h2 className="text-lg font-semibold text-[var(--text)]">Start your war room</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[var(--radius-md)] border border-[var(--border)] p-2 text-[var(--text-2)] hover:bg-[var(--surface)]"
-            aria-label="Close intake"
+            className="rounded-full border border-[var(--border)] p-2 text-[var(--text-3)] hover:bg-[var(--graphite)]"
+            aria-label="Close"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div
-          className="mt-4 h-1 overflow-hidden rounded-full bg-[var(--bg-2)]"
-          aria-hidden
-        >
-          <div
-            className="h-full bg-[var(--gold)] transition-all duration-300"
-            style={{ width: `${progressPct}%` }}
-          />
+        <div className="flex gap-1 px-5 pt-3">
+          {STEPS.map((_, i) => (
+            <div
+              key={i}
+              className={`h-1 flex-1 rounded-full transition-colors ${
+                i <= step ? "bg-[var(--accent)]" : "bg-[var(--bg-3)]"
+              }`}
+            />
+          ))}
         </div>
 
-        <div className="mt-6 space-y-4">
-          {step === 0 && (
-            <label className="block space-y-2">
-              <span className="text-sm text-[var(--text-2)]">Company name</span>
+        <div className="flex-1 overflow-y-auto px-5 py-5">
+          {step === 0 ? (
+            <div className="space-y-4">
+              <p className="text-sm text-[var(--text-3)]">
+                Just the basics. Everything else is optional.
+              </p>
+              <div>
+                <label className="mb-1.5 block text-xs text-[var(--text-4)]">
+                  Company name
+                </label>
+                <input
+                  className={inputClass}
+                  placeholder="e.g. Careem, your startup…"
+                  {...form.register("company")}
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs text-[var(--text-4)]">Industry</label>
+                <select className={selectClass} {...form.register("industry")}>
+                  {INDUSTRY_CHIPS.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs text-[var(--text-4)]">Market</label>
+                <select className={selectClass} {...form.register("geography")}>
+                  {GEOGRAPHY_CHIPS.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <input
-                className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--border-2)]"
-                {...form.register("company")}
-              />
-            </label>
-          )}
-
-          {step === 1 && (
-            <div className="space-y-3">
-              {ChipRow("industry", INDUSTRY_CHIPS)}
-              <input
-                placeholder="Custom industry"
-                className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
-                {...form.register("industry")}
-              />
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-3">
-              {ChipRow("geography", GEOGRAPHY_CHIPS)}
-              <input
-                placeholder="Region / market detail"
-                className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
-                {...form.register("geography")}
-              />
-              <input
+                className={inputClass}
                 placeholder="City (optional)"
-                className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
                 {...form.register("city")}
               />
             </div>
-          )}
+          ) : null}
 
-          {step === 3 && (
-            <div className="space-y-2">{ChipRow("size", SIZE_OPTIONS)}</div>
-          )}
-
-          {step === 4 && (
-            <div className="space-y-2">{ChipRow("vibe", VIBE_OPTIONS)}</div>
-          )}
-
-          {step === 5 && (
-            <div className="space-y-3">
-              <label className="block space-y-2">
-                <span className="text-sm text-[var(--text-2)]">Audience</span>
-                <textarea
-                  rows={4}
-                  className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
-                  {...form.register("audience")}
-                />
-              </label>
-              {ChipRow("audience_type", AUDIENCE_TYPE_CHIPS)}
-            </div>
-          )}
-
-          {step === 6 && (
-            <div className="space-y-3">
-              {ChipRow("budget", BUDGET_OPTIONS)}
-              <label className="block space-y-2">
-                <span className="text-sm text-[var(--text-2)]">Notes (optional)</span>
-                <textarea
-                  rows={3}
-                  className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
-                  {...form.register("notes")}
-                />
-              </label>
-            </div>
-          )}
-
-          {step === 7 && (
-            <label className="block space-y-2">
-              <span className="text-sm text-[var(--text-2)]">Work email</span>
-              <input
-                type="email"
-                className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm text-[var(--text)]"
-                {...form.register("email")}
+          {step === 1 ? (
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs text-[var(--text-4)]">Brand vibe</label>
+                <select className={selectClass} {...form.register("vibe")}>
+                  <option value="">Pick one (optional)</option>
+                  {VIBE_OPTIONS.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs text-[var(--text-4)]">
+                  Monthly budget (optional)
+                </label>
+                <select className={selectClass} {...form.register("budget")}>
+                  <option value="">Skip</option>
+                  {BUDGET_OPTIONS.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <textarea
+                rows={2}
+                className={inputClass}
+                placeholder="Who is your audience? (optional)"
+                {...form.register("audience")}
               />
-            </label>
-          )}
-
-          {step === 8 && (
-            <div className="space-y-3">
-              {isSupabaseBrowserConfigured() ? (
-                <>
-                  <p className="text-sm text-[var(--text-2)]">
-                    Enter the 6-digit code sent to {form.watch("email")}.
-                  </p>
-                  <input
-                    inputMode="numeric"
-                    maxLength={6}
-                    className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-2)] px-3 py-2 text-sm tracking-[0.4em] text-[var(--text)]"
-                    {...form.register("otp")}
-                  />
-                </>
-              ) : (
-                <p className="text-sm text-[var(--text-2)]">
-                  Supabase URL/anon key are missing, so email OTP is disabled in
-                  this build.
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {formError && (
-          <p className="mt-4 text-sm text-[var(--red)]" role="alert">
-            {formError}
-          </p>
-        )}
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={back}
-            disabled={step === 0 || busy}
-            className="rounded-[var(--radius-md)] border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-2)] hover:bg-[var(--surface)] disabled:opacity-40"
-          >
-            Back
-          </button>
-          <div className="flex flex-wrap gap-2">
-            {step < 7 && (
               <button
                 type="button"
-                onClick={() => void next()}
-                disabled={busy}
-                className="rounded-[var(--radius-md)] border border-[var(--gold)] bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] px-4 py-2 text-sm font-medium text-[var(--text)] disabled:opacity-40"
+                className="text-xs text-[var(--accent-bright)] hover:underline"
+                onClick={() => setShowMore((v) => !v)}
               >
-                Continue
+                {showMore ? "Hide" : "Show"} more options
               </button>
-            )}
-            {step === 7 && (
-              <>
-                {isSupabaseBrowserConfigured() ? (
+              {showMore ? (
+                <div className="space-y-3 border-t border-[var(--border)] pt-3">
+                  <input
+                    className={inputClass}
+                    placeholder="Website"
+                    {...form.register("website")}
+                  />
+                  <input
+                    className={inputClass}
+                    placeholder="Instagram"
+                    {...form.register("instagram")}
+                  />
+                  <textarea
+                    rows={2}
+                    className={inputClass}
+                    placeholder="Notes"
+                    {...form.register("notes")}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {step === 2 ? (
+            <div className="space-y-4">
+              {authUser ? (
+                <p className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--graphite)] px-4 py-3 text-sm text-[var(--text-2)]">
+                  Signed in as{" "}
+                  <span className="font-medium text-[var(--text)]">{authUser.email}</span>
+                </p>
+              ) : isSupabaseBrowserConfigured() ? (
+                <div className="space-y-3">
+                  <Link href="/login" className="link-accent text-sm">
+                    Sign in first (recommended) →
+                  </Link>
+                  <input
+                    type="email"
+                    className={inputClass}
+                    placeholder="Or use email code"
+                    {...form.register("email")}
+                  />
                   <button
                     type="button"
                     disabled={busy}
                     onClick={() => void sendOtp()}
-                    className="rounded-[var(--radius-md)] border border-[var(--gold)] bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] px-4 py-2 text-sm font-medium text-[var(--text)] disabled:opacity-40"
+                    className="btn btn-secondary h-10 w-full"
                   >
                     Send code
                   </button>
-                ) : null}
-                {process.env.NODE_ENV === "development" ? (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void submitDemo()}
-                    className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--text)] disabled:opacity-40"
-                  >
-                    Skip login (local demo)
-                  </button>
-                ) : null}
-              </>
-            )}
-            {step === 8 && isSupabaseBrowserConfigured() && (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => void submitLive()}
-                className="rounded-[var(--radius-md)] border border-[var(--gold)] bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] px-4 py-2 text-sm font-medium text-[var(--text)] disabled:opacity-40"
-              >
-                Verify & start
-              </button>
-            )}
-          </div>
+                  {otpSent ? (
+                    <input
+                      inputMode="numeric"
+                      className={`${inputClass} tracking-[0.3em]`}
+                      placeholder="6-digit code"
+                      {...form.register("otp")}
+                    />
+                  ) : null}
+                </div>
+              ) : (
+                <p className="text-sm text-[var(--text-3)]">Auth not configured.</p>
+              )}
+              <p className="text-xs text-[var(--text-4)]">
+                Ten agents will research trends, compare rivals, and build your visual war
+                room.
+              </p>
+            </div>
+          ) : null}
+        </div>
+
+        {formError ? (
+          <p className="px-5 text-sm text-[var(--red)]" role="alert">
+            {formError}
+          </p>
+        ) : null}
+
+        <div className="flex gap-2 border-t border-[var(--border)] p-4">
+          {step > 0 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s - 1)}
+              className="btn btn-secondary inline-flex h-11 items-center gap-1 px-4"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden />
+              Back
+            </button>
+          ) : (
+            <button type="button" onClick={onClose} className="btn btn-secondary h-11 px-4">
+              Cancel
+            </button>
+          )}
+          {step < STEPS.length - 1 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s + 1)}
+              className="btn btn-primary btn-glow inline-flex h-11 flex-1 items-center justify-center gap-1"
+            >
+              Continue
+              <ChevronRight className="h-4 w-4" aria-hidden />
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void startRun()}
+              className="btn btn-primary btn-glow h-11 flex-1"
+            >
+              {busy ? "Starting…" : "Start war room"}
+            </button>
+          )}
         </div>
       </div>
     </div>
